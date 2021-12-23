@@ -76,13 +76,22 @@ export default function Router() {
         </AuthGuard>
       ),
       children: [
-        { element: <Navigate to="/dashboard/app" replace /> },
+        { element: <Navigate to="/dashboard/app" replace /> }, // những dòng dạng dạng thế này nghĩa là nó là path độc lập (có path riêng dành cho nó) nhưng khi thằng cha nó đc gọi thì nó sẽ đc gọi đầu tiên, nghĩa là khi gọi http://localhost:3000/dashboard/ thì http://localhost:3000/dashboard/app sẽ đc gọi liền
         { path: 'app', element: <GeneralApp /> },
         { path: 'ecommerce', element: <GeneralEcommerce /> },
         { path: 'analytics', element: <GeneralAnalytics /> },
         { path: 'banking', element: <GeneralBanking /> },
         { path: 'booking', element: <GeneralBooking /> },
 
+        {
+          path: 'todo',
+          children: [
+            { element: <Navigate to="/dashboard/todo/list" replace /> },
+            { path: 'list', element: <TodoList /> },
+            { path: 'new', element: <TodoCreate /> },
+            { path: ':id/edit', element: <TodoCreate /> }
+          ]
+        },
         {
           path: 'e-commerce',
           children: [
@@ -142,24 +151,27 @@ export default function Router() {
 
     // Main Routes
     {
-      path: '*',
-      element: <LogoOnlyLayout />,
+      path: '*', // mình tưởng ở đây "*" thì con nó phải là gì đó như "*/coming-soon" nhưng ko, nó y chang path "/" ở dưới????
+      // sau khi suy nghĩ thì ở mọi đường link khác đều ko có dấu "/" nhưng nó vẫn tự hiểu ngầm, nhìn đống link trên kia là thấy, thế sao ở dưới lại có 1 cái path "/" ở dưới làm gì cho mất công, vậy thì hiểu rằng có 2 loại link đặc biệt, đó là link mới mở server, là link "/", và link tùm lum gì đó "*" để mình bắt lỗi, 2 cái link này cú pháp y chang nhau, là chỉ cần "localhost:3000/{link children của nó}", bỏ 1 trong 2 (path "*" hoặc path "/") thì cái kia làm nhiệm vụ của cái còn lại luôn =)))), chia 2 cái này rõ ràng vì nhìn lại đi, 2 cái path nó dùng element khác nhau chức năng khác nhau, children cũng khác nhau.
+      // sau khi mình test nhiều lần thì mình nhận ra là path ở đây nó tự xóa dấu "/" đằng trước path luôn (đằng sau như "*/" nó ko bỏ dấu "/" đâu, nhưng "dashboard/" thì nó tự bỏ "/" (nên trường hợp này thì ghi hay ko ghi "/" ở sau path nó y chang nhau), mệt não ghê @@, với lại từ 2 dấu "/" trở lên đằng sau path thì cũng lỗi, ko có cách nào truy cập vào children luôn), mình đã test path:"///sss" nhưng nó tự động nhận path:"sss" thôi, ghi "///" trên browser sẽ lỗi liền
+      element: <LogoOnlyLayout />, // màn hình chỉ có logo, báo 404 hay sao đó
       children: [
-        { path: 'coming-soon', element: <ComingSoon /> },
-        { path: 'maintenance', element: <Maintenance /> },
+        { element: <Navigate to="/dashboard/user/profile" replace /> },
+        { path: 'coming-soon', element: <ComingSoon /> }, // http://localhost:3000/coming-soon
+        { path: 'maintenance', element: <Maintenance /> }, // http://localhost:3000/maintenance
         { path: 'pricing', element: <Pricing /> },
         { path: 'payment', element: <Payment /> },
         { path: '500', element: <Page500 /> },
         { path: '404', element: <NotFound /> },
-        { path: '*', element: <Navigate to="/404" replace /> }
+        { path: '*', element: <Navigate to="/404" replace /> } // có thể để ở đây là to="/500" để biết rõ rằng dòng 404 cuối cùng ở dưới kia sẽ ko bao giờ đc gọi vì ở đây cha là path "*" rồi, children cũng là "*"" thì nó bao hết các trường hợp rồi
       ]
     },
     {
       path: '/',
       element: <MainLayout />,
       children: [
-        { element: <LandingPage /> },
-        { path: 'about-us', element: <About /> },
+        { element: <LandingPage /> }, // trang mặc định của http://localhost:3000
+        { path: 'about-us', element: <About /> }, // http://localhost:3000/about-us // bấm ở đây http://localhost:3000/about-us/dsjd nó vẫn ko chạy xuống 404 ở dưới, nó vẫn match trường hợp 404 ở trên
         { path: 'contact-us', element: <Contact /> },
         { path: 'faqs', element: <Faqs /> },
         {
@@ -219,7 +231,7 @@ export default function Router() {
         }
       ]
     },
-    { path: '*', element: <Navigate to="/404" replace /> }
+    { path: '*', element: <Navigate to="/404" replace /> } // dòng này sẽ ko đc gọi vì trên kia có path "*" rồi, trừ khi trên kia đổi thành cái khác (vd: "*" => "test") thì dòng này mới đc gọi khi mình bấm tùm lum tùm la vào đường link
   ]);
 }
 
@@ -236,6 +248,8 @@ const GeneralEcommerce = Loadable(lazy(() => import('../pages/dashboard/GeneralE
 const GeneralAnalytics = Loadable(lazy(() => import('../pages/dashboard/GeneralAnalytics')));
 const GeneralBanking = Loadable(lazy(() => import('../pages/dashboard/GeneralBanking')));
 const GeneralBooking = Loadable(lazy(() => import('../pages/dashboard/GeneralBooking')));
+const TodoList = Loadable(lazy(() => import('../pages/dashboard/TodoList')));
+const TodoCreate = Loadable(lazy(() => import('../pages/dashboard/TodoCreate')));
 const EcommerceShop = Loadable(lazy(() => import('../pages/dashboard/EcommerceShop')));
 const EcommerceProductDetails = Loadable(lazy(() => import('../pages/dashboard/EcommerceProductDetails')));
 const EcommerceProductList = Loadable(lazy(() => import('../pages/dashboard/EcommerceProductList')));

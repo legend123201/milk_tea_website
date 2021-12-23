@@ -1,0 +1,16 @@
+- ở file index tổng có dòng:
+// mock api
+import './_apis_';
+=> đây là dòng để tạo ra các cuộc gọi api giả, nó cấu hình cái axios của mình (file mock.js) toàn chỉ gọi mỗi 
+api giả dù mình có cấu hình url cho axios, xem các file trong apis là thấy có các hàm onGet, onPost. 
+Vậy nên mình phải tạo file myAxios.js để thay thế, để mình vẫn giữ đc các mock api của mình, 
+nếu như ko cần mock api và sử dụng file axios.js luôn thì chỉ cần comment dòng "import './_apis_';" lại là đc.
+
+- folder "routes": có 2 file.
++ index.js: cấu hình đường dẫn nào sẽ là component nào.
++ path.js: tạo ra object chứa các string là các đường dẫn đc cấu hình trong index.js để xài trong chương trình.
+
+- file "src\layouts\dashboard\SidebarConfig.js": 
+=> cấu hình sidebar của mình sẽ có những trang nào bằng cách cấu hình đường dẫn.
+
+- icon svg free có thể download mình có thể kiếm tại https://www.onlinewebfonts.com/, nếu web này dừng hoạt động thì tìm web khác.

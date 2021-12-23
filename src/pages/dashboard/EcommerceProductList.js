@@ -22,7 +22,7 @@ import {
 } from '@mui/material';
 // redux
 import { useDispatch, useSelector } from '../../redux/store';
-import { getProducts, deleteProduct } from '../../redux/slices/product';
+import { getProducts, deleteProduct, testAPI, logtestAPI } from '../../redux/slices/product';
 // utils
 import { fDate } from '../../utils/formatTime';
 import { fCurrency } from '../../utils/formatNumber';
@@ -110,6 +110,12 @@ export default function EcommerceProductList() {
   useEffect(() => {
     dispatch(getProducts());
   }, [dispatch]);
+
+  useEffect(() => {
+    console.log('i run');
+    testAPI();
+    logtestAPI();
+  }, []);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';

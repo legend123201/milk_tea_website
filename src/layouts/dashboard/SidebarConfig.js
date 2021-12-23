@@ -22,7 +22,8 @@ const ICONS = {
   ecommerce: getIcon('ic_ecommerce'),
   analytics: getIcon('ic_analytics'),
   dashboard: getIcon('ic_dashboard'),
-  booking: getIcon('ic_booking')
+  booking: getIcon('ic_booking'),
+  todo: getIcon('ic_heart')
 };
 
 const sidebarConfig = [
@@ -48,6 +49,18 @@ const sidebarConfig = [
   {
     subheader: 'management',
     items: [
+      // MANAGEMENT : TODO
+      {
+        title: 'todo',
+        path: PATH_DASHBOARD.todo.root,
+        icon: ICONS.todo,
+        children: [
+          { title: 'list', path: PATH_DASHBOARD.todo.list },
+          { title: 'create', path: PATH_DASHBOARD.todo.newTodo },
+          { title: 'edit', path: PATH_DASHBOARD.todo.editById }
+        ]
+      },
+
       // MANAGEMENT : USER
       {
         title: 'user',

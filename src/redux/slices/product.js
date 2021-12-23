@@ -2,6 +2,7 @@ import { sum, map, filter, uniqBy, reject } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
 // utils
 import axios from '../../utils/axios';
+import myAxios from '../../utils/myCustomAxios';
 
 // ----------------------------------------------------------------------
 
@@ -215,6 +216,7 @@ export const {
 
 export function getProducts() {
   return async (dispatch) => {
+    console.log('i getProducts');
     dispatch(slice.actions.startLoading());
     try {
       const response = await axios.get('/api/products');
@@ -223,6 +225,19 @@ export function getProducts() {
       dispatch(slice.actions.hasError(error));
     }
   };
+}
+
+export async function testAPI() {
+  console.log('i testAPI');
+  try {
+    const response = await myAxios.get('/todoList');
+    console.log(response);
+  } catch (error) {
+    console.log(error);
+  }
+}
+export function logtestAPI() {
+  console.log('i logtestAPI');
 }
 
 // ----------------------------------------------------------------------

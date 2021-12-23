@@ -52,6 +52,12 @@ export const PATH_DASHBOARD = {
   },
   calendar: path(ROOTS_DASHBOARD, '/calendar'),
   kanban: path(ROOTS_DASHBOARD, '/kanban'),
+  todo: {
+    root: path(ROOTS_DASHBOARD, '/todo'),
+    list: path(ROOTS_DASHBOARD, '/todo/list'),
+    newTodo: path(ROOTS_DASHBOARD, '/todo/new'),
+    editById: path(ROOTS_DASHBOARD, `/todo/-1/edit`)
+  },
   user: {
     root: path(ROOTS_DASHBOARD, '/user'),
     profile: path(ROOTS_DASHBOARD, '/user/profile'),
