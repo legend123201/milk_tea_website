@@ -26,7 +26,6 @@ import { useSnackbar } from 'notistack';
 
 // redux
 import { useDispatch, useSelector } from '../../redux/store';
-import { getUserList, deleteUser } from '../../redux/slices/user';
 import { getTodoList, deleteTodo } from '../../redux/slices/todo';
 // routes
 import { PATH_DASHBOARD } from '../../routes/paths';
@@ -122,7 +121,6 @@ export default function UserList() {
   };
 
   useEffect(() => {
-    // dispatch(getUserList());
     dispatch(getTodoList(excuteAfterGetList));
   }, [dispatch]);
 
