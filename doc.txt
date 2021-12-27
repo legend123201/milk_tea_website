@@ -14,3 +14,5 @@ nếu như ko cần mock api và sử dụng file axios.js luôn thì chỉ cầ
 => cấu hình sidebar của mình sẽ có những trang nào bằng cách cấu hình đường dẫn.
 
 - icon svg free có thể download mình có thể kiếm tại https://www.onlinewebfonts.com/, nếu web này dừng hoạt động thì tìm web khác.
+
+- khi muốn biến ko định dạng theo camelCase thì để dòng ngày ở đầu file js: /* eslint-disable camelcase */

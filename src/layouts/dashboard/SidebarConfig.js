@@ -61,6 +61,18 @@ const sidebarConfig = [
         ]
       },
 
+      // MANAGEMENT : MY CUSTOM PRODUCT
+      {
+        title: 'my custom product',
+        path: PATH_DASHBOARD.myCustomProduct.root,
+        icon: ICONS.todo,
+        children: [
+          { title: 'list', path: PATH_DASHBOARD.myCustomProduct.list },
+          { title: 'create', path: PATH_DASHBOARD.myCustomProduct.newMyCustomProduct },
+          { title: 'edit', path: PATH_DASHBOARD.myCustomProduct.editById }
+        ]
+      },
+
       // MANAGEMENT : USER
       {
         title: 'user',

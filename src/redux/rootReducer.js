@@ -10,6 +10,7 @@ import productReducer from './slices/product';
 import calendarReducer from './slices/calendar';
 import kanbanReducer from './slices/kanban';
 import todoReducer from './slices/todo';
+import myCustomProductReducer from './slices/myCustomProduct';
 
 // ----------------------------------------------------------------------
 
@@ -35,7 +36,8 @@ const rootReducer = combineReducers({
   calendar: calendarReducer,
   kanban: kanbanReducer,
   product: persistReducer(productPersistConfig, productReducer),
-  todo: todoReducer
+  todo: todoReducer,
+  myCustomProduct: myCustomProductReducer
 });
 
 export { rootPersistConfig, rootReducer };

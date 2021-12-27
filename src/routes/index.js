@@ -93,6 +93,15 @@ export default function Router() {
           ]
         },
         {
+          path: 'my-custom-product',
+          children: [
+            { element: <Navigate to="/dashboard/my-custom-product/list" replace /> },
+            { path: 'list', element: <MyCustomProductList /> },
+            { path: 'new', element: <MyCustomProductCreate /> },
+            { path: ':id/edit', element: <MyCustomProductCreate /> }
+          ]
+        },
+        {
           path: 'e-commerce',
           children: [
             { element: <Navigate to="/dashboard/e-commerce/shop" replace /> },
@@ -250,6 +259,8 @@ const GeneralBanking = Loadable(lazy(() => import('../pages/dashboard/GeneralBan
 const GeneralBooking = Loadable(lazy(() => import('../pages/dashboard/GeneralBooking')));
 const TodoList = Loadable(lazy(() => import('../pages/dashboard/TodoList')));
 const TodoCreate = Loadable(lazy(() => import('../pages/dashboard/TodoCreate')));
+const MyCustomProductList = Loadable(lazy(() => import('../pages/dashboard/MyCustomProductList')));
+const MyCustomProductCreate = Loadable(lazy(() => import('../pages/dashboard/MyCustomProductCreate')));
 const EcommerceShop = Loadable(lazy(() => import('../pages/dashboard/EcommerceShop')));
 const EcommerceProductDetails = Loadable(lazy(() => import('../pages/dashboard/EcommerceProductDetails')));
 const EcommerceProductList = Loadable(lazy(() => import('../pages/dashboard/EcommerceProductList')));

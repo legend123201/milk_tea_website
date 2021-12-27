@@ -58,6 +58,12 @@ export const PATH_DASHBOARD = {
     newTodo: path(ROOTS_DASHBOARD, '/todo/new'),
     editById: path(ROOTS_DASHBOARD, `/todo/-1/edit`)
   },
+  myCustomProduct: {
+    root: path(ROOTS_DASHBOARD, '/my-custom-product'),
+    list: path(ROOTS_DASHBOARD, '/my-custom-product/list'),
+    newMyCustomProduct: path(ROOTS_DASHBOARD, '/my-custom-product/new'),
+    editById: path(ROOTS_DASHBOARD, `/my-custom-product/-1/edit`)
+  },
   user: {
     root: path(ROOTS_DASHBOARD, '/user'),
     profile: path(ROOTS_DASHBOARD, '/user/profile'),

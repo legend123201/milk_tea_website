@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { filter } from 'lodash';
 import { Icon } from '@iconify/react';
 import { sentenceCase } from 'change-case';
@@ -5,7 +6,7 @@ import { useState, useEffect } from 'react';
 import plusFill from '@iconify/icons-eva/plus-fill';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // material
-import { useTheme } from '@mui/material/styles';
+import { useTheme, styled } from '@mui/material/styles';
 import {
   Card,
   Table,
@@ -19,14 +20,15 @@ import {
   Container,
   Typography,
   TableContainer,
-  TablePagination
+  TablePagination,
+  Box
 } from '@mui/material';
 
 import { useSnackbar } from 'notistack';
 
 // redux
 import { useDispatch, useSelector } from '../../redux/store';
-import { getTodoList, deleteTodo } from '../../redux/slices/todo';
+import { getMyCustomProductList, deleteMyCustomProduct } from '../../redux/slices/myCustomProduct';
 // routes
 import { PATH_DASHBOARD } from '../../routes/paths';
 // hooks
@@ -47,10 +49,21 @@ import {
 
 const TABLE_HEAD = [
   { id: 'id', label: 'ID', alignRight: false },
-  { id: 'value', label: 'Value', alignRight: false },
-  { id: 'status', label: 'Status', alignRight: false },
+  { id: 'name', label: 'Name', alignRight: false },
+  { id: 'quantity_in_stock', label: 'Quantity in stock', alignRight: false },
+  { id: 'unit_perchase_price', label: 'Unit perchase price', alignRight: false },
+  { id: 'unit_sale_price', label: 'Unit sale price', alignRight: false },
+  { id: 'measure_unit', label: 'Measure unit', alignRight: false },
   { id: '' }
 ];
+
+const ThumbImgStyle = styled('img')(({ theme }) => ({
+  width: 64,
+  height: 64,
+  objectFit: 'cover',
+  margin: theme.spacing(0, 2),
+  borderRadius: theme.shape.borderRadiusSm
+}));
 
 // ----------------------------------------------------------------------
 
@@ -70,7 +83,7 @@ function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// hàm sort của ô input search duy nhất ở trang list, ở đây mình sort theo value của todo
+// hàm sort của ô input search duy nhất ở trang list, ở đây mình sort theo name của my custom product
 function applySortFilter(array, comparator, query) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -79,18 +92,19 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    // value của todo là string, nhưng ko hiểu sao nó ko hiểu cái mình phải thêm hàm toString()
-    return filter(array, (_todo) => _todo.value.toString().toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(
+      array,
+      (_myCustomProduct) => _myCustomProduct.name.toString().toLowerCase().indexOf(query.toLowerCase()) !== -1
+    );
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function TodoList() {
+export default function MyCustomProductList() {
   const { themeStretch } = useSettings();
   const theme = useTheme();
   const dispatch = useDispatch();
-  // const { userList } = useSelector((state) => state.user);
-  const { listData } = useSelector((state) => state.todo); // lấy data list trên redux
+  const { listData } = useSelector((state) => state.myCustomProduct); // lấy data list trên redux
   const [page, setPage] = useState(0); // biến giữ page hiện tại là page nào
   const [order, setOrder] = useState('asc'); // sắp xếp tăng dần hay giảm dần, mặc định mình để tăng dần
   const [selected, setSelected] = useState([]); // đây là mảng chứa id của những phần tử nào đc chọn (mảng number vì id là number)
@@ -101,27 +115,27 @@ export default function TodoList() {
   const { enqueueSnackbar } = useSnackbar();
 
   const excuteAfterGetList = (globalStateNewest) => {
-    if (!globalStateNewest.todo.isSuccess) {
+    if (!globalStateNewest.myCustomProduct.isSuccess) {
       const variant = 'error';
       // variant could be success, error, warning, info, or default
-      enqueueSnackbar(globalStateNewest.todo.errorMessage, { variant });
+      enqueueSnackbar(globalStateNewest.myCustomProduct.errorMessage, { variant });
     }
   };
 
   const excuteAfterDelete = (globalStateNewest) => {
-    if (globalStateNewest.todo.isSuccess) {
+    if (globalStateNewest.myCustomProduct.isSuccess) {
       const variant = 'success';
       enqueueSnackbar('Delete success', { variant });
-      dispatch(getTodoList(excuteAfterGetList));
+      dispatch(getMyCustomProductList(excuteAfterGetList));
     } else {
       const variant = 'error';
       // variant could be success, error, warning, info, or default
-      enqueueSnackbar(globalStateNewest.todo.errorMessage, { variant });
+      enqueueSnackbar(globalStateNewest.myCustomProduct.errorMessage, { variant });
     }
   };
 
   useEffect(() => {
-    dispatch(getTodoList(excuteAfterGetList));
+    dispatch(getMyCustomProductList(excuteAfterGetList));
   }, [dispatch]);
 
   // sort theo prop được đưa vào hàm
@@ -175,43 +189,43 @@ export default function TodoList() {
 
   // hàm set giá trị của ô search cho biến filterValue ở trên
   const handleFilterByValue = (event) => {
-    setFilterValue(event.target.value); // value này là của biến target lấy giá trị của input, chứ ko phải prop của object todo nhé
+    setFilterValue(event.target.value); // value này là của biến target lấy giá trị của input, chứ ko phải prop của object my custom product nhé
   };
 
   // bấm vào delete trên more menu hàm gọi api xóa
   const handleDelete = (id) => {
-    dispatch(deleteTodo(id, excuteAfterDelete));
+    dispatch(deleteMyCustomProduct(id, excuteAfterDelete));
   };
 
   // bấm vào edit trên more menu
   const handleEdit = (id) => {
-    navigate(`${PATH_DASHBOARD.todo.root}/${id}/edit`);
+    navigate(`${PATH_DASHBOARD.myCustomProduct.root}/${id}/edit`);
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - listData.length) : 0;
 
-  const filteredTodos = applySortFilter(listData, getComparator(order, orderBy), filterValue);
+  const filteredMyCustomProducts = applySortFilter(listData, getComparator(order, orderBy), filterValue);
 
-  const isTodoNotFound = filteredTodos.length === 0;
+  const isMyCustomProductNotFound = filteredMyCustomProducts.length === 0;
 
   return (
-    <Page title="Todo: List | Minimal-UI">
+    <Page title="Product: List | Minimal-UI">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="Todo List"
+          heading="Product List"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Todo', href: PATH_DASHBOARD.todo.root },
+            { name: 'Product', href: PATH_DASHBOARD.myCustomProduct.root },
             { name: 'List' }
           ]}
           action={
             <Button
               variant="contained"
               component={RouterLink}
-              to={PATH_DASHBOARD.todo.newTodo}
+              to={PATH_DASHBOARD.myCustomProduct.newMyCustomProduct}
               startIcon={<Icon icon={plusFill} />}
             >
-              New Todo
+              New Product
             </Button>
           }
         />
@@ -236,8 +250,9 @@ export default function TodoList() {
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredTodos.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, value, status } = row;
+                  {filteredMyCustomProducts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                    const { id, name, quantity_in_stock, unit_perchase_price, unit_sale_price, measure_unit, image } =
+                      row;
                     const isItemSelected = selected.indexOf(id) !== -1;
 
                     return (
@@ -253,8 +268,24 @@ export default function TodoList() {
                           <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, id)} />
                         </TableCell>
                         <TableCell align="left">{id}</TableCell>
-                        <TableCell align="left">{value}</TableCell>
-                        <TableCell align="left">{status}</TableCell>
+                        <TableCell component="th" scope="row" padding="none" style={{ padding: 0 }}>
+                          <Box
+                            sx={{
+                              py: 2,
+                              display: 'flex',
+                              alignItems: 'center'
+                            }}
+                          >
+                            <ThumbImgStyle alt={name} src={image} />
+                            <Typography variant="subtitle2" noWrap>
+                              {name}
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                        <TableCell align="left">{quantity_in_stock}</TableCell>
+                        <TableCell align="left">{unit_perchase_price}</TableCell>
+                        <TableCell align="left">{unit_sale_price}</TableCell>
+                        <TableCell align="left">{measure_unit}</TableCell>
 
                         <TableCell align="right">
                           <MyCustomListMoreMenu onDelete={() => handleDelete(id)} onEdit={() => handleEdit(id)} />
@@ -268,7 +299,7 @@ export default function TodoList() {
                     </TableRow>
                   )}
                 </TableBody>
-                {isTodoNotFound && (
+                {isMyCustomProductNotFound && (
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
