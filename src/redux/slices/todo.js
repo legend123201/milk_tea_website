@@ -60,6 +60,8 @@ export default slice.reducer;
 
 // ----------------------------------------------------------------------
 
+const defaultErrorString = 'Can not connect to API Server! ';
+
 export function getTodoList(myCallBack) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.startLoading());
@@ -69,7 +71,7 @@ export function getTodoList(myCallBack) {
     } catch (e) {
       // e sẽ tự động là response của server trả về nếu như server có trả về, còn không nó là lỗi của chương trình
       // cái điều này là do template giúp mình
-      const messageError = e.message ? e.message : e.toString();
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
       dispatch(slice.actions.hasError(messageError));
     } finally {
       if (myCallBack) myCallBack(getState());
@@ -84,7 +86,7 @@ export function addTodo(newTodo, myCallBack) {
       const response = await axios.post('/todos', newTodo);
       dispatch(slice.actions.addTodoSuccess());
     } catch (e) {
-      const messageError = e.message ? e.message : e.toString();
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
       dispatch(slice.actions.hasError(messageError));
     } finally {
       if (myCallBack) myCallBack(getState());
@@ -99,7 +101,7 @@ export function deleteTodo(deleteId, myCallBack) {
       const response = await axios.delete(`/todos/${deleteId}`);
       dispatch(slice.actions.deleteTodoSuccess());
     } catch (e) {
-      const messageError = e.message ? e.message : e.toString();
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
       dispatch(slice.actions.hasError(messageError));
     } finally {
       if (myCallBack) myCallBack(getState());
@@ -114,7 +116,7 @@ export function editTodo(editTodo, myCallBack) {
       const response = await axios.put(`/todos/${editTodo.id}`, editTodo);
       dispatch(slice.actions.editTodoSuccess());
     } catch (e) {
-      const messageError = e.message ? e.message : e.toString();
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
       dispatch(slice.actions.hasError(messageError));
     } finally {
       if (myCallBack) myCallBack(getState());

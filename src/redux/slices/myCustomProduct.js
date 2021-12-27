@@ -60,6 +60,8 @@ export default slice.reducer;
 
 // ----------------------------------------------------------------------
 
+const defaultErrorString = 'Can not connect to API Server! ';
+
 export function getMyCustomProductList(myCallBack) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.startLoading());
@@ -67,7 +69,8 @@ export function getMyCustomProductList(myCallBack) {
       const response = await axios.get('/products');
       dispatch(slice.actions.getMyCustomProductListSuccess(response.data.data));
     } catch (e) {
-      const messageError = e.message ? e.message : e.toString();
+      console.log(e);
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
       dispatch(slice.actions.hasError(messageError));
     } finally {
       if (myCallBack) myCallBack(getState());
@@ -82,7 +85,7 @@ export function addMyCustomProduct(newMyCustomProduct, myCallBack) {
       const response = await axios.post('/products', newMyCustomProduct);
       dispatch(slice.actions.addMyCustomProductSuccess());
     } catch (e) {
-      const messageError = e.message ? e.message : e.toString();
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
       dispatch(slice.actions.hasError(messageError));
     } finally {
       if (myCallBack) myCallBack(getState());
@@ -97,7 +100,7 @@ export function deleteMyCustomProduct(deleteId, myCallBack) {
       const response = await axios.delete(`/products/${deleteId}`);
       dispatch(slice.actions.deleteMyCustomProductSuccess());
     } catch (e) {
-      const messageError = e.message ? e.message : e.toString();
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
       dispatch(slice.actions.hasError(messageError));
     } finally {
       if (myCallBack) myCallBack(getState());
@@ -112,7 +115,7 @@ export function editMyCustomProduct(editMyCustomProduct, myCallBack) {
       const response = await axios.put(`/products/${editMyCustomProduct.id}`, editMyCustomProduct);
       dispatch(slice.actions.editMyCustomProductSuccess());
     } catch (e) {
-      const messageError = e.message ? e.message : e.toString();
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
       dispatch(slice.actions.hasError(messageError));
     } finally {
       if (myCallBack) myCallBack(getState());
