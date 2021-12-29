@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 // utils
 import axios from '../utils/axios';
 import { isValidToken, setSession } from '../utils/jwt';
+import { useDispatch } from '../redux/store';
+import { getStaff } from '../redux/slices/staff';
 
 // ----------------------------------------------------------------------
 
@@ -63,17 +65,24 @@ AuthProvider.propTypes = {
 
 function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const myDispatch = useDispatch(); // dòng mình thêm
 
   useEffect(() => {
+    // hàm này sẽ chạy 1 lần khi mới mở trang web, tại nó trong useEffect mà
     const initialize = async () => {
       try {
         const accessToken = window.localStorage.getItem('accessToken');
+        const staffId = window.localStorage.getItem('staffId'); // dòng mình thêm
 
         if (accessToken && isValidToken(accessToken)) {
           setSession(accessToken);
 
           const response = await axios.get('/api/account/my-account');
           const { user } = response.data;
+
+          // --------------api lấy staff mình tự viết--------------- start
+          myDispatch(getStaff(staffId)); // dòng mình thêm
+          // --------------api lấy staff mình tự viết--------------- end
 
           dispatch({
             type: 'INITIALIZE',
@@ -107,6 +116,9 @@ function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
+    // nếu login api thành công thì mới chạy hàm này và mình set cứng 2 cái này là giá trị đúng
+    email = 'demo@minimals.cc'; // dòng mình thêm
+    password = 'demo1234'; // dòng mình thêm
     const response = await axios.post('/api/account/login', {
       email,
       password

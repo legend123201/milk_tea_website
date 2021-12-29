@@ -14,6 +14,7 @@ MyCustomAlertDialog.propTypes = {
 export default function MyCustomAlertDialog({ open, handleCloseDialog, handleAgree }) {
   return (
     <div>
+      {/* Nếu ko muốn bấm ra ngoài dialog thì tắt dialog thì xóa "onClose={handleCloseDialog}" là xong */}
       <Dialog open={open} onClose={handleCloseDialog}>
         <DialogTitle>Warning</DialogTitle>
         <DialogContent>

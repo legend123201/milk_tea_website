@@ -73,6 +73,42 @@ const sidebarConfig = [
         ]
       },
 
+      // MANAGEMENT : MY CUSTOM USER
+      {
+        title: 'my custom user',
+        path: PATH_DASHBOARD.myCustomUser.root,
+        icon: ICONS.todo,
+        children: [{ title: 'list', path: PATH_DASHBOARD.myCustomUser.list }]
+      },
+
+      // MANAGEMENT : BILL
+      {
+        title: 'bill',
+        path: PATH_DASHBOARD.bill.root,
+        icon: ICONS.todo,
+        children: [{ title: 'list', path: PATH_DASHBOARD.bill.list }]
+      },
+
+      // MANAGEMENT : IMPORT ORDER
+      {
+        title: 'import order',
+        path: PATH_DASHBOARD.importOrder.root,
+        icon: ICONS.todo,
+        children: [
+          { title: 'list', path: PATH_DASHBOARD.importOrder.list },
+          { title: 'create', path: PATH_DASHBOARD.importOrder.newImportOrder },
+          { title: 'edit', path: PATH_DASHBOARD.importOrder.editById }
+        ]
+      },
+
+      // MANAGEMENT : IMPORT ORDER DETAIL
+      {
+        title: 'import order detail',
+        path: PATH_DASHBOARD.importOrderDetail.root,
+        icon: ICONS.todo,
+        children: [{ title: 'list', path: PATH_DASHBOARD.importOrderDetail.list }]
+      },
+
       // MANAGEMENT : USER
       {
         title: 'user',

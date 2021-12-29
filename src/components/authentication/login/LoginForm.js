@@ -17,6 +17,8 @@ import useAuth from '../../../hooks/useAuth';
 import useIsMountedRef from '../../../hooks/useIsMountedRef';
 //
 import { MIconButton } from '../../@material-extend';
+import { useDispatch } from '../../../redux/store';
+import { login as loginAPI } from '../../../redux/slices/staff';
 
 // ----------------------------------------------------------------------
 
@@ -25,9 +27,10 @@ export default function LoginForm() {
   const isMountedRef = useIsMountedRef();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch();
 
   const LoginSchema = Yup.object().shape({
-    email: Yup.string().email('Email must be a valid email address').required('Email is required'),
+    email: Yup.string().required('Email is required'),
     password: Yup.string().required('Password is required')
   });
 
@@ -40,18 +43,29 @@ export default function LoginForm() {
     validationSchema: LoginSchema,
     onSubmit: async (values, { setErrors, setSubmitting, resetForm }) => {
       try {
-        await login(values.email, values.password);
-        enqueueSnackbar('Login success', {
-          variant: 'success',
-          action: (key) => (
-            <MIconButton size="small" onClick={() => closeSnackbar(key)}>
-              <Icon icon={closeFill} />
-            </MIconButton>
-          )
-        });
-        if (isMountedRef.current) {
-          setSubmitting(false);
-        }
+        const excuteAfterLogin = async (globalStateNewest) => {
+          if (globalStateNewest.staff.isSuccess) {
+            // dưới đây là những dòng code có sẵn của project
+            await login(values.email, values.password);
+            enqueueSnackbar('Login success', {
+              variant: 'success',
+              action: (key) => (
+                <MIconButton size="small" onClick={() => closeSnackbar(key)}>
+                  <Icon icon={closeFill} />
+                </MIconButton>
+              )
+            });
+            if (isMountedRef.current) {
+              setSubmitting(false);
+            }
+          } else {
+            const variant = 'error';
+            // variant could be success, error, warning, info, or default
+            enqueueSnackbar(globalStateNewest.staff.errorMessage, { variant });
+          }
+        };
+        const loginInfo = { username: values.email, password: values.password };
+        dispatch(loginAPI(loginInfo, excuteAfterLogin));
       } catch (error) {
         console.error(error);
         resetForm();

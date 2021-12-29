@@ -25,11 +25,6 @@ export default function MyCustomListMoreMenu({ onDelete, onEdit }) {
   const [openMenu, setOpenMenu] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
 
-  useEffect(() => {
-    console.log(`openMenu: ${openMenu}`);
-    console.log(`openDialog: ${openDialog}`);
-  }, [openMenu, openDialog]);
-
   // mở menu
   const handleClickOpenMenu = () => {
     setOpenMenu(true);

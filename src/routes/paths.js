@@ -64,6 +64,24 @@ export const PATH_DASHBOARD = {
     newMyCustomProduct: path(ROOTS_DASHBOARD, '/my-custom-product/new'),
     editById: path(ROOTS_DASHBOARD, `/my-custom-product/-1/edit`)
   },
+  myCustomUser: {
+    root: path(ROOTS_DASHBOARD, '/my-custom-user'),
+    list: path(ROOTS_DASHBOARD, '/my-custom-user/list')
+  },
+  bill: {
+    root: path(ROOTS_DASHBOARD, '/bill'),
+    list: path(ROOTS_DASHBOARD, '/bill/list')
+  },
+  importOrder: {
+    root: path(ROOTS_DASHBOARD, '/import-order'),
+    list: path(ROOTS_DASHBOARD, '/import-order/list'),
+    newImportOrder: path(ROOTS_DASHBOARD, '/import-order/new'),
+    editById: path(ROOTS_DASHBOARD, `/import-order/-1/edit`)
+  },
+  importOrderDetail: {
+    root: path(ROOTS_DASHBOARD, '/import-order-detail'),
+    list: path(ROOTS_DASHBOARD, '/import-order-detail/list')
+  },
   user: {
     root: path(ROOTS_DASHBOARD, '/user'),
     profile: path(ROOTS_DASHBOARD, '/user/profile'),
