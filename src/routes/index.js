@@ -127,8 +127,8 @@ export default function Router() {
           children: [
             { element: <Navigate to="/dashboard/import-order/list" replace /> },
             { path: 'list', element: <ImportOrderList /> },
-            { path: 'new', element: <ImportOrderCreate /> },
-            { path: ':id/edit', element: <ImportOrderCreate /> }
+            { path: 'new', element: <ImportOrderDetailList /> },
+            { path: ':id/:staffOfOrderId/detail', element: <ImportOrderDetailList /> }
           ]
         },
         {

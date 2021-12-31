@@ -71,7 +71,7 @@ function AuthProvider({ children }) {
     // hàm này sẽ chạy 1 lần khi mới mở trang web, tại nó trong useEffect mà
     const initialize = async () => {
       try {
-        const accessToken = window.localStorage.getItem('accessToken');
+        const accessToken = window.sessionStorage.getItem('accessToken'); // từ đầu nó dùng local storage, mình đã chuyển qua xài session storage
         const staffId = window.localStorage.getItem('staffId'); // dòng mình thêm
 
         if (accessToken && isValidToken(accessToken)) {
@@ -81,7 +81,7 @@ function AuthProvider({ children }) {
           const { user } = response.data;
 
           // --------------api lấy staff mình tự viết--------------- start
-          myDispatch(getStaff(staffId)); // dòng mình thêm
+          myDispatch(getStaff(true, staffId)); // dòng mình thêm
           // --------------api lấy staff mình tự viết--------------- end
 
           dispatch({
@@ -119,6 +119,7 @@ function AuthProvider({ children }) {
     // nếu login api thành công thì mới chạy hàm này và mình set cứng 2 cái này là giá trị đúng
     email = 'demo@minimals.cc'; // dòng mình thêm
     password = 'demo1234'; // dòng mình thêm
+
     const response = await axios.post('/api/account/login', {
       email,
       password

@@ -6,7 +6,8 @@ import axios from '../../utils/myCustomAxios';
 // ----------------------------------------------------------------------
 
 const initialState = {
-  data: [],
+  currentStaff: {},
+  staffOfOrder: {},
   isLoading: false,
   isSuccess: null,
   errorMessage: ''
@@ -32,14 +33,21 @@ const slice = createSlice({
     loginSuccess(state, action) {
       state.isLoading = false;
       state.isSuccess = true;
-      state.data = action.payload;
+      state.currentStaff = action.payload;
     },
 
-    // GET STAFF
-    getStaffSuccess(state, action) {
+    // GET CURRENT STAFF SUCCESS
+    getCurrentStaffSuccess(state, action) {
       state.isLoading = false;
       state.isSuccess = true;
-      state.data = action.payload;
+      state.currentStaff = action.payload;
+    },
+
+    // GET STAFF OF ORDER SUCCESS
+    getStaffOfOrderSuccess(state, action) {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.staffOfOrder = action.payload;
     }
   }
 });
@@ -68,12 +76,16 @@ export function login(loginInfo, myCallBack) {
   };
 }
 
-export function getStaff(staffId, myCallBack) {
+export function getStaff(isGetCurrentStaff, staffId, myCallBack) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.startLoading());
     try {
       const response = await axios.get(`/staffs/${staffId}`);
-      dispatch(slice.actions.getStaffSuccess(response.data.data[0]));
+      if (isGetCurrentStaff) {
+        dispatch(slice.actions.getCurrentStaffSuccess(response.data.data[0]));
+      } else {
+        dispatch(slice.actions.getStaffOfOrderSuccess(response.data.data[0]));
+      }
     } catch (e) {
       // e sẽ tự động là response của server trả về nếu như server có trả về, còn không nó là lỗi của chương trình
       // cái điều này là do template giúp mình

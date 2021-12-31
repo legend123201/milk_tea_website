@@ -33,6 +33,13 @@ const slice = createSlice({
       state.isLoading = false;
       state.isSuccess = true;
       state.listData = action.payload;
+    },
+
+    // GET IMPORT ORDER DETAILS BY ID
+    getImportOrderDetailListByIdSuccess(state, action) {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.listData = action.payload;
     }
   }
 });
@@ -50,6 +57,22 @@ export function getImportOrderDetailList(myCallBack) {
     try {
       const response = await axios.get('/importOrderDetails');
       dispatch(slice.actions.getImportOrderDetailListSuccess(response.data.data));
+    } catch (e) {
+      console.log(e);
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
+      dispatch(slice.actions.hasError(messageError));
+    } finally {
+      if (myCallBack) myCallBack(getState());
+    }
+  };
+}
+
+export function getImportOrderDetailListById(importOrderId, myCallBack) {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await axios.get(`/importOrderDetails/ ${importOrderId}`);
+      dispatch(slice.actions.getImportOrderDetailListByIdSuccess(response.data.data));
     } catch (e) {
       console.log(e);
       const messageError = e.message ? e.message : defaultErrorString + e.toString();

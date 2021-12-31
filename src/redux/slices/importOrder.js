@@ -33,6 +33,12 @@ const slice = createSlice({
       state.isLoading = false;
       state.isSuccess = true;
       state.listData = action.payload;
+    },
+
+    // ADD IMPORTORDERS
+    addImportOrderSuccess(state, action) {
+      state.isLoading = false;
+      state.isSuccess = true;
     }
   }
 });
@@ -50,6 +56,22 @@ export function getImportOrderList(myCallBack) {
     try {
       const response = await axios.get('/importOrders');
       dispatch(slice.actions.getImportOrderListSuccess(response.data.data));
+    } catch (e) {
+      console.log(e);
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
+      dispatch(slice.actions.hasError(messageError));
+    } finally {
+      if (myCallBack) myCallBack(getState());
+    }
+  };
+}
+
+export function addImportOrder(staffId, detailList, myCallBack) {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await axios.post(`/importOrders/${staffId}`, detailList);
+      dispatch(slice.actions.addImportOrderSuccess(response.data.data));
     } catch (e) {
       console.log(e);
       const messageError = e.message ? e.message : defaultErrorString + e.toString();

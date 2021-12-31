@@ -16,3 +16,11 @@ nếu như ko cần mock api và sử dụng file axios.js luôn thì chỉ cầ
 - icon svg free có thể download mình có thể kiếm tại https://www.onlinewebfonts.com/, nếu web này dừng hoạt động thì tìm web khác.
 
 - khi muốn biến ko định dạng theo camelCase thì để dòng ngày ở đầu file js: /* eslint-disable camelcase */
+
+- làm về phần login mình cần để ý 5 file:
++ LoginForm.js: trang đăng nhập.
++ useAuth.js: file trung gian.
++ JWTContext.js: file xử lý chính các hàm login, logout, register,...
++ jwt.js: chứa hàm setSession.
++ account.js: nơi chứa data giả của user và hàm gọi api login mock.
+=> Lưu ý: mình set staffId vào local storage chứ chưa có xóa nó, nó mãi tồn tại biến đó, ko sao cả nên sửa hay ko cũng đc.

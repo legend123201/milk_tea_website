@@ -29,15 +29,16 @@ const isValidToken = (accessToken) => {
 //   }, timeLeft);
 // };
 
+// từ đầu nó dùng local storage, mình đã chuyển qua xài session storage
 const setSession = (accessToken) => {
   if (accessToken) {
-    localStorage.setItem('accessToken', accessToken);
+    sessionStorage.setItem('accessToken', accessToken);
     axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
     // This function below will handle when token is expired
     // const { exp } = jwtDecode(accessToken);
     // handleTokenExpired(exp);
   } else {
-    localStorage.removeItem('accessToken');
+    sessionStorage.removeItem('accessToken');
     delete axios.defaults.headers.common.Authorization;
   }
 };

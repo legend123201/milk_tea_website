@@ -97,7 +97,7 @@ const sidebarConfig = [
         children: [
           { title: 'list', path: PATH_DASHBOARD.importOrder.list },
           { title: 'create', path: PATH_DASHBOARD.importOrder.newImportOrder },
-          { title: 'edit', path: PATH_DASHBOARD.importOrder.editById }
+          { title: 'detail', path: PATH_DASHBOARD.importOrder.detail }
         ]
       },
 

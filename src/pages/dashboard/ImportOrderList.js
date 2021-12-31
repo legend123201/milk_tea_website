@@ -187,9 +187,9 @@ export default function ImportOrderList() {
     // dispatch(deleteMyCustomUser(id, excuteAfterDelete));
   };
 
-  // bấm vào edit trên more menu
-  const handleEdit = (id) => {
-    // navigate(`${PATH_DASHBOARD.myCustomUser.root}/${id}/edit`);
+  // bấm vào detail trên more menu
+  const handleDetail = (id, staffOfOrderId) => {
+    navigate(`${PATH_DASHBOARD.importOrder.root}/${id}/${staffOfOrderId}/detail`);
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - listData.length) : 0;
@@ -260,7 +260,10 @@ export default function ImportOrderList() {
                         <TableCell align="left">{fDateTime(datetime)}</TableCell>
                         <TableCell align="left">{staff_id}</TableCell>
                         <TableCell align="right">
-                          <MyCustomListMoreMenu onDelete={() => handleDelete(id)} onEdit={() => handleEdit(id)} />
+                          <MyCustomListMoreMenu
+                            onDelete={() => handleDelete(id)}
+                            onDetail={() => handleDetail(id, staff_id)}
+                          />
                         </TableCell>
                       </TableRow>
                     );

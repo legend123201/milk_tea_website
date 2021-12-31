@@ -17,10 +17,11 @@ import { PATH_DASHBOARD } from '../../../../routes/paths';
 
 MyCustomListMoreMenu.propTypes = {
   onDelete: PropTypes.func,
-  onEdit: PropTypes.func
+  onEdit: PropTypes.func,
+  onDetail: PropTypes.func
 };
 
-export default function MyCustomListMoreMenu({ onDelete, onEdit }) {
+export default function MyCustomListMoreMenu({ onDelete, onEdit, onDetail }) {
   const ref = useRef(null);
   const [openMenu, setOpenMenu] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -62,19 +63,32 @@ export default function MyCustomListMoreMenu({ onDelete, onEdit }) {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        <MenuItem onClick={handleClickOpenDialog} sx={{ color: 'text.secondary' }}>
-          <ListItemIcon>
-            <Icon icon={trash2Outline} width={24} height={24} />
-          </ListItemIcon>
-          <ListItemText primary="Delete" primaryTypographyProps={{ variant: 'body2' }} />
-        </MenuItem>
+        {onDelete && (
+          <MenuItem onClick={handleClickOpenDialog} sx={{ color: 'text.secondary' }}>
+            <ListItemIcon>
+              <Icon icon={trash2Outline} width={24} height={24} />
+            </ListItemIcon>
+            <ListItemText primary="Delete" primaryTypographyProps={{ variant: 'body2' }} />
+          </MenuItem>
+        )}
 
-        <MenuItem onClick={onEdit} sx={{ color: 'text.secondary' }}>
-          <ListItemIcon>
-            <Icon icon={editFill} width={24} height={24} />
-          </ListItemIcon>
-          <ListItemText primary="Edit" primaryTypographyProps={{ variant: 'body2' }} />
-        </MenuItem>
+        {onEdit && (
+          <MenuItem onClick={onEdit} sx={{ color: 'text.secondary' }}>
+            <ListItemIcon>
+              <Icon icon={editFill} width={24} height={24} />
+            </ListItemIcon>
+            <ListItemText primary="Edit" primaryTypographyProps={{ variant: 'body2' }} />
+          </MenuItem>
+        )}
+
+        {onDetail && (
+          <MenuItem onClick={onDetail} sx={{ color: 'text.secondary' }}>
+            <ListItemIcon>
+              <Icon icon={editFill} width={24} height={24} />
+            </ListItemIcon>
+            <ListItemText primary="Detail" primaryTypographyProps={{ variant: 'body2' }} />
+          </MenuItem>
+        )}
       </Menu>
       <MyCustomAlertDialog open={openDialog} handleCloseDialog={handleCloseDialog} handleAgree={onDelete} />
     </>

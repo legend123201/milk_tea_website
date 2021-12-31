@@ -45,6 +45,7 @@ export default function LoginForm() {
       try {
         const excuteAfterLogin = async (globalStateNewest) => {
           if (globalStateNewest.staff.isSuccess) {
+            localStorage.setItem('staffId', globalStateNewest.staff.currentStaff.id); // dòng thêm
             // dưới đây là những dòng code có sẵn của project
             await login(values.email, values.password);
             enqueueSnackbar('Login success', {

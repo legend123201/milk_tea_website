@@ -76,7 +76,7 @@ export const PATH_DASHBOARD = {
     root: path(ROOTS_DASHBOARD, '/import-order'),
     list: path(ROOTS_DASHBOARD, '/import-order/list'),
     newImportOrder: path(ROOTS_DASHBOARD, '/import-order/new'),
-    editById: path(ROOTS_DASHBOARD, `/import-order/-1/edit`)
+    detail: path(ROOTS_DASHBOARD, `/import-order/-1/-1/detail`)
   },
   importOrderDetail: {
     root: path(ROOTS_DASHBOARD, '/import-order-detail'),
