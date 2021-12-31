@@ -51,6 +51,7 @@ import {
 const TABLE_HEAD = [
   { id: 'id', label: 'ID', alignRight: false },
   { id: 'datetime', label: 'Date Time', alignRight: false },
+  { id: 'name', label: 'Staff Name', alignRight: false },
   { id: 'staff_id', label: 'Staff ID', alignRight: false },
   { id: '' }
 ];
@@ -241,7 +242,7 @@ export default function ImportOrderList() {
                 />
                 <TableBody>
                   {filteredImportOrders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, datetime, staff_id } = row;
+                    const { id, datetime, staff_id, name } = row;
                     const isItemSelected = selected.indexOf(id) !== -1;
 
                     return (
@@ -258,6 +259,7 @@ export default function ImportOrderList() {
                         </TableCell>
                         <TableCell align="left">{id}</TableCell>
                         <TableCell align="left">{fDateTime(datetime)}</TableCell>
+                        <TableCell align="left">{name}</TableCell>
                         <TableCell align="left">{staff_id}</TableCell>
                         <TableCell align="right">
                           <MyCustomListMoreMenu

@@ -25,10 +25,11 @@ import {
 } from '@mui/material';
 
 import { useSnackbar } from 'notistack';
+import { fDateTime } from '../../utils/formatTime';
 
 // redux
 import { useDispatch, useSelector } from '../../redux/store';
-import { getMyCustomUserList, deleteMyCustomUser } from '../../redux/slices/myCustomUser';
+import { getBillList } from '../../redux/slices/bill';
 // routes
 import { PATH_DASHBOARD } from '../../routes/paths';
 // hooks
@@ -49,8 +50,10 @@ import {
 
 const TABLE_HEAD = [
   { id: 'id', label: 'ID', alignRight: false },
-  { id: 'datetime', label: 'Date time', alignRight: false },
+  { id: 'datetime', label: 'Date Time', alignRight: false },
+  { id: 'user_name', label: 'User Name', alignRight: false },
   { id: 'user_id', label: 'User ID', alignRight: false },
+  { id: 'staff_name', label: 'Staff Name', alignRight: false },
   { id: 'staff_id', label: 'Staff ID', alignRight: false },
   { id: '' }
 ];
@@ -73,7 +76,7 @@ function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// hàm sort của ô input search duy nhất ở trang list, ở đây mình sort theo name của my custom user
+// hàm sort của ô input search duy nhất ở trang list, ở đây mình sort theo user_id của bill
 function applySortFilter(array, comparator, query) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -84,17 +87,17 @@ function applySortFilter(array, comparator, query) {
   if (query) {
     return filter(
       array,
-      (_myCustomUser) => _myCustomUser.name.toString().toLowerCase().indexOf(query.toLowerCase()) !== -1
+      (_bill) => _bill.user_id.toString().toLowerCase().indexOf(query.toString().toLowerCase()) !== -1
     );
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function MyCustomUserList() {
+export default function BillList() {
   const { themeStretch } = useSettings();
   const theme = useTheme();
   const dispatch = useDispatch();
-  const { listData } = useSelector((state) => state.myCustomUser); // lấy data list trên redux
+  const { listData } = useSelector((state) => state.bill); // lấy data list trên redux
   const [page, setPage] = useState(0); // biến giữ page hiện tại là page nào
   const [order, setOrder] = useState('asc'); // sắp xếp tăng dần hay giảm dần, mặc định mình để tăng dần
   const [selected, setSelected] = useState([]); // đây là mảng chứa id của những phần tử nào đc chọn (mảng number vì id là number)
@@ -105,27 +108,27 @@ export default function MyCustomUserList() {
   const { enqueueSnackbar } = useSnackbar();
 
   const excuteAfterGetList = (globalStateNewest) => {
-    if (!globalStateNewest.myCustomUser.isSuccess) {
+    if (!globalStateNewest.bill.isSuccess) {
       const variant = 'error';
       // variant could be success, error, warning, info, or default
-      enqueueSnackbar(globalStateNewest.myCustomUser.errorMessage, { variant });
+      enqueueSnackbar(globalStateNewest.bill.errorMessage, { variant });
     }
   };
 
   const excuteAfterDelete = (globalStateNewest) => {
-    if (globalStateNewest.myCustomUser.isSuccess) {
+    if (globalStateNewest.bill.isSuccess) {
       const variant = 'success';
       enqueueSnackbar('Delete success', { variant });
-      dispatch(getMyCustomUserList(excuteAfterGetList));
+      dispatch(getBillList(excuteAfterGetList));
     } else {
       const variant = 'error';
       // variant could be success, error, warning, info, or default
-      enqueueSnackbar(globalStateNewest.myCustomUser.errorMessage, { variant });
+      enqueueSnackbar(globalStateNewest.bill.errorMessage, { variant });
     }
   };
 
   useEffect(() => {
-    dispatch(getMyCustomUserList(excuteAfterGetList));
+    dispatch(getBillList(excuteAfterGetList));
   }, [dispatch]);
 
   // sort theo prop được đưa vào hàm
@@ -179,33 +182,28 @@ export default function MyCustomUserList() {
 
   // hàm set giá trị của ô search cho biến filterValue ở trên
   const handleFilterByValue = (event) => {
-    setFilterValue(event.target.value); // value này là của biến target lấy giá trị của input, chứ ko phải prop của object my custom user nhé
+    setFilterValue(event.target.value); // value này là của biến target lấy giá trị của input, chứ ko phải prop của object import order nhé
   };
 
-  // bấm vào delete trên more menu hàm gọi api xóa
-  const handleDelete = (id) => {
-    dispatch(deleteMyCustomUser(id, excuteAfterDelete));
-  };
-
-  // bấm vào edit trên more menu
-  const handleEdit = (id) => {
-    navigate(`${PATH_DASHBOARD.myCustomUser.root}/${id}/edit`);
+  // bấm vào detail trên more menu
+  const handleDetail = (id, staffOfOrderId) => {
+    // navigate(`${PATH_DASHBOARD.importOrder.root}/${id}/${staffOfOrderId}/detail`);
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - listData.length) : 0;
 
-  const filteredMyCustomUsers = applySortFilter(listData, getComparator(order, orderBy), filterValue);
+  const filteredBills = applySortFilter(listData, getComparator(order, orderBy), filterValue);
 
-  const isMyCustomUserNotFound = filteredMyCustomUsers.length === 0;
+  const isBillNotFound = filteredBills.length === 0;
 
   return (
-    <Page title="User: List | Minimal-UI">
+    <Page title="Bill: List | Minimal-UI">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="User List"
+          heading="Bill List"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'User', href: PATH_DASHBOARD.myCustomUser.root },
+            { name: 'Bill', href: PATH_DASHBOARD.bill.root },
             { name: 'List' }
           ]}
         />
@@ -230,8 +228,8 @@ export default function MyCustomUserList() {
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredMyCustomUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name, phone, email, address } = row;
+                  {filteredBills.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                    const { id, datetime, user_name, user_id, staff_name, staff_id } = row;
                     const isItemSelected = selected.indexOf(id) !== -1;
 
                     return (
@@ -247,13 +245,13 @@ export default function MyCustomUserList() {
                           <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, id)} />
                         </TableCell>
                         <TableCell align="left">{id}</TableCell>
-                        <TableCell align="left">{name}</TableCell>
-                        <TableCell align="left">{phone}</TableCell>
-                        <TableCell align="left">{email}</TableCell>
-                        <TableCell align="left">{address}</TableCell>
-
+                        <TableCell align="left">{fDateTime(datetime)}</TableCell>
+                        <TableCell align="left">{user_name}</TableCell>
+                        <TableCell align="left">{user_id}</TableCell>
+                        <TableCell align="left">{staff_name}</TableCell>
+                        <TableCell align="left">{staff_id}</TableCell>
                         <TableCell align="right">
-                          <MyCustomListMoreMenu onDelete={() => handleDelete(id)} onEdit={() => handleEdit(id)} />
+                          <MyCustomListMoreMenu onDetail={() => handleDetail(id, staff_id)} />
                         </TableCell>
                       </TableRow>
                     );
@@ -264,7 +262,7 @@ export default function MyCustomUserList() {
                     </TableRow>
                   )}
                 </TableBody>
-                {isMyCustomUserNotFound && (
+                {isBillNotFound && (
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>

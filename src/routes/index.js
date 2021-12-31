@@ -116,13 +116,6 @@ export default function Router() {
           ]
         },
         {
-          path: 'bill',
-          children: [
-            { element: <Navigate to="/dashboard/bill/list" replace /> },
-            { path: 'list', element: <BillList /> }
-          ]
-        },
-        {
           path: 'import-order',
           children: [
             { element: <Navigate to="/dashboard/import-order/list" replace /> },
@@ -132,10 +125,11 @@ export default function Router() {
           ]
         },
         {
-          path: 'import-order-detail',
+          path: 'bill',
           children: [
-            { element: <Navigate to="/dashboard/import-order-detail/list" replace /> },
-            { path: 'list', element: <ImportOrderDetailList /> }
+            { element: <Navigate to="/dashboard/bill/list" replace /> },
+            { path: 'list', element: <BillList /> },
+            { path: ':id/:userId/:staffId/detail', element: <BillDetailList /> }
           ]
         },
         {
@@ -301,8 +295,8 @@ const MyCustomProductCreate = Loadable(lazy(() => import('../pages/dashboard/MyC
 const MyCustomUserList = Loadable(lazy(() => import('../pages/dashboard/MyCustomUserList')));
 const BillList = Loadable(lazy(() => import('../pages/dashboard/BillList')));
 const ImportOrderList = Loadable(lazy(() => import('../pages/dashboard/ImportOrderList')));
-const ImportOrderCreate = Loadable(lazy(() => import('../pages/dashboard/ImportOrderCreate')));
 const ImportOrderDetailList = Loadable(lazy(() => import('../pages/dashboard/ImportOrderDetailList')));
+const BillDetailList = Loadable(lazy(() => import('../pages/dashboard/BillDetailList')));
 const EcommerceShop = Loadable(lazy(() => import('../pages/dashboard/EcommerceShop')));
 const EcommerceProductDetails = Loadable(lazy(() => import('../pages/dashboard/EcommerceProductDetails')));
 const EcommerceProductList = Loadable(lazy(() => import('../pages/dashboard/EcommerceProductList')));

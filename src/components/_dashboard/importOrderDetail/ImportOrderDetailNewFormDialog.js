@@ -54,7 +54,8 @@ export default function ImportOrderDetailNewFormDialog({ open, handleCloseDialog
   const ImportOrderDetailSchema = Yup.object().shape({
     product_id: Yup.number().required('Product ID is required'),
     quantity: Yup.number().required('Quantity is required').min(1),
-    current_unit_perchase_price: Yup.number().required('Current unit perchase price is required').min(1)
+    current_unit_perchase_price: Yup.number().required('Current unit perchase price is required').min(1),
+    name: Yup.string().required('Name is required')
   });
 
   const formik = useFormik({
@@ -62,7 +63,8 @@ export default function ImportOrderDetailNewFormDialog({ open, handleCloseDialog
     initialValues: {
       product_id: '',
       quantity: '',
-      current_unit_perchase_price: ''
+      current_unit_perchase_price: '',
+      name: ''
     },
     validationSchema: ImportOrderDetailSchema,
     onSubmit: async (values, { setSubmitting, resetForm, setErrors }) => {
@@ -89,7 +91,7 @@ export default function ImportOrderDetailNewFormDialog({ open, handleCloseDialog
     setErrorString('');
   }, [open]);
 
-  // chọn product thì lưu giữ lại giá mua hiện tại của nó
+  // chọn product thì lưu giữ lại giá mua hiện tại của nó và tên của nó
   // ô input select phía dưới nếu mình xài onChange thì nó sẽ ghi đè onChange mặc định của nó
   // nên mình xài onClick thay thế
   const handleOnClick = (e) => {
@@ -98,8 +100,10 @@ export default function ImportOrderDetailNewFormDialog({ open, handleCloseDialog
       const currentProductId = e.target.value;
       const currentProduct = listData.find((item) => Number(item.id) === Number(currentProductId));
       setFieldValue('current_unit_perchase_price', currentProduct.unit_perchase_price.toString());
+      setFieldValue('name', currentProduct.name.toString());
     } else {
       setFieldValue('current_unit_perchase_price', '');
+      setFieldValue('name', '');
     }
   };
 

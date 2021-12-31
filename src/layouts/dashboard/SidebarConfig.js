@@ -81,14 +81,6 @@ const sidebarConfig = [
         children: [{ title: 'list', path: PATH_DASHBOARD.myCustomUser.list }]
       },
 
-      // MANAGEMENT : BILL
-      {
-        title: 'bill',
-        path: PATH_DASHBOARD.bill.root,
-        icon: ICONS.todo,
-        children: [{ title: 'list', path: PATH_DASHBOARD.bill.list }]
-      },
-
       // MANAGEMENT : IMPORT ORDER
       {
         title: 'import order',
@@ -101,12 +93,15 @@ const sidebarConfig = [
         ]
       },
 
-      // MANAGEMENT : IMPORT ORDER DETAIL
+      // MANAGEMENT : BILL
       {
-        title: 'import order detail',
-        path: PATH_DASHBOARD.importOrderDetail.root,
+        title: 'bill',
+        path: PATH_DASHBOARD.bill.root,
         icon: ICONS.todo,
-        children: [{ title: 'list', path: PATH_DASHBOARD.importOrderDetail.list }]
+        children: [
+          { title: 'list', path: PATH_DASHBOARD.bill.list },
+          { title: 'detail', path: PATH_DASHBOARD.bill.detail }
+        ]
       },
 
       // MANAGEMENT : USER

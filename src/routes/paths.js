@@ -68,19 +68,16 @@ export const PATH_DASHBOARD = {
     root: path(ROOTS_DASHBOARD, '/my-custom-user'),
     list: path(ROOTS_DASHBOARD, '/my-custom-user/list')
   },
-  bill: {
-    root: path(ROOTS_DASHBOARD, '/bill'),
-    list: path(ROOTS_DASHBOARD, '/bill/list')
-  },
   importOrder: {
     root: path(ROOTS_DASHBOARD, '/import-order'),
     list: path(ROOTS_DASHBOARD, '/import-order/list'),
     newImportOrder: path(ROOTS_DASHBOARD, '/import-order/new'),
     detail: path(ROOTS_DASHBOARD, `/import-order/-1/-1/detail`)
   },
-  importOrderDetail: {
-    root: path(ROOTS_DASHBOARD, '/import-order-detail'),
-    list: path(ROOTS_DASHBOARD, '/import-order-detail/list')
+  bill: {
+    root: path(ROOTS_DASHBOARD, '/bill'),
+    list: path(ROOTS_DASHBOARD, '/bill/list'),
+    detail: path(ROOTS_DASHBOARD, `/bill/-1/-1/-1/detail`)
   },
   user: {
     root: path(ROOTS_DASHBOARD, '/user'),
