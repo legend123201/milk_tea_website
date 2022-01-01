@@ -13,9 +13,10 @@ import todoReducer from './slices/todo';
 import staffReducer from './slices/staff';
 import myCustomProductReducer from './slices/myCustomProduct';
 import myCustomUserReducer from './slices/myCustomUser';
-import billReducer from './slices/bill';
 import importOrderReducer from './slices/importOrder';
 import importOrderDetailReducer from './slices/importOrderDetail';
+import billReducer from './slices/bill';
+import billDetailReducer from './slices/billDetail';
 
 // ----------------------------------------------------------------------
 
@@ -45,9 +46,10 @@ const rootReducer = combineReducers({
   staff: staffReducer,
   myCustomProduct: myCustomProductReducer,
   myCustomUser: myCustomUserReducer,
-  bill: billReducer,
   importOrder: importOrderReducer,
-  importOrderDetail: importOrderDetailReducer
+  importOrderDetail: importOrderDetailReducer,
+  bill: billReducer,
+  billDetail: billDetailReducer
 });
 
 export { rootPersistConfig, rootReducer };

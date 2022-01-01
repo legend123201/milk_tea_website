@@ -186,8 +186,8 @@ export default function BillList() {
   };
 
   // bấm vào detail trên more menu
-  const handleDetail = (id, staffOfOrderId) => {
-    // navigate(`${PATH_DASHBOARD.importOrder.root}/${id}/${staffOfOrderId}/detail`);
+  const handleDetail = (id, userId, staffId) => {
+    navigate(`${PATH_DASHBOARD.bill.root}/${id}/${userId}/${staffId}/detail`);
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - listData.length) : 0;
@@ -251,7 +251,7 @@ export default function BillList() {
                         <TableCell align="left">{staff_name}</TableCell>
                         <TableCell align="left">{staff_id}</TableCell>
                         <TableCell align="right">
-                          <MyCustomListMoreMenu onDetail={() => handleDetail(id, staff_id)} />
+                          <MyCustomListMoreMenu onDetail={() => handleDetail(id, user_id, staff_id)} />
                         </TableCell>
                       </TableRow>
                     );

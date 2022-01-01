@@ -30,8 +30,8 @@ import { fDateTime } from '../../utils/formatTime';
 
 // redux
 import { useDispatch, useSelector } from '../../redux/store';
-import { getImportOrderDetailListById } from '../../redux/slices/importOrderDetail';
-import { addImportOrder } from '../../redux/slices/importOrder';
+import { getBillDetailListById } from '../../redux/slices/billDetail';
+import { getMyCustomUser } from '../../redux/slices/myCustomUser';
 import { getStaff } from '../../redux/slices/staff';
 // routes
 import { PATH_DASHBOARD } from '../../routes/paths';
@@ -48,7 +48,6 @@ import {
   MyCustomListMoreMenu,
   MyCustomListToolbar
 } from '../../components/_dashboard/my-custom-list/list';
-import ImportOrderDetailNewFormDialog from '../../components/_dashboard/importOrderDetail/ImportOrderDetailNewFormDialog';
 
 // ----------------------------------------------------------------------
 
@@ -56,7 +55,7 @@ const TABLE_HEAD = [
   { id: 'product_id', label: 'Product ID', alignRight: false },
   { id: 'name', label: 'Name', alignRight: false },
   { id: 'quantity', label: 'Quantity', alignRight: false },
-  { id: 'current_unit_perchase_price', label: 'Current unit perchase price', alignRight: false },
+  { id: 'current_unit_sale_price', label: 'Current unit sale price', alignRight: false },
   { id: '' }
 ];
 
@@ -78,7 +77,7 @@ function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// hàm sort của ô input search duy nhất ở trang list, ở đây mình sort theo product_id của importOrderDetail
+// hàm sort của ô input search duy nhất ở trang list, ở đây mình sort theo product_id của billDetail
 function applySortFilter(array, comparator, query) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -89,20 +88,19 @@ function applySortFilter(array, comparator, query) {
   if (query) {
     return filter(
       array,
-      (_importOrderDetail) =>
-        _importOrderDetail.product_id.toString().toLowerCase().indexOf(query.toString().toLowerCase()) !== -1
+      (_billDetail) => _billDetail.product_id.toString().toLowerCase().indexOf(query.toString().toLowerCase()) !== -1
     );
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function ImportOrderDetailList() {
+export default function BillDetailList() {
   const { themeStretch } = useSettings();
   const theme = useTheme();
   const dispatch = useDispatch();
-  const currentStaff = useSelector((state) => state.staff.currentStaff); // staff đang sử dụng chương trình
-  const [staffOfOrder, setStaffOfOrder] = useState(null); // staff của đơn hàng hiện tại
-  const [listData, setListData] = useState([]); // khởi tạo mảng chứa các chi tiết là rỗng
+  const user = useSelector((state) => state.myCustomUser.listData); // lấy data user trên redux
+  const [approvedStaff, setApprovedStaff] = useState(null); // staff đã chấp nhận đơn hàng hiện tại
+  const { listData } = useSelector((state) => state.billDetail); // lấy data list trên redux
   const [page, setPage] = useState(0); // biến giữ page hiện tại là page nào
   const [order, setOrder] = useState('asc'); // sắp xếp tăng dần hay giảm dần, mặc định mình để tăng dần
   const [selected, setSelected] = useState([]); // đây là mảng chứa id của những phần tử nào đc chọn (mảng number vì id là number)
@@ -110,10 +108,11 @@ export default function ImportOrderDetailList() {
   const [filterValue, setFilterValue] = useState(''); // biến để tìm kiếm theo value, ô search duy nhất của trang list
   const [rowsPerPage, setRowsPerPage] = useState(5); // số dòng mỗi trang
   const [totalOfOrder, setTotalOfOrder] = useState(0); // giá tiền tổng của đơn hàng
-  const { pathname } = useLocation();
-  const isDetail = pathname.includes('detail');
+
   const { id } = useParams();
-  const { staffOfOrderId } = useParams();
+  const { userId } = useParams();
+  let { staffId } = useParams();
+  staffId = Number(staffId); // mình cần làm thế này vì staffId nếu là null thì param nó là string 'null' (truthy value) chứ ko phải là null thật
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [openDialog, setOpenDialog] = useState(false); // điều khiển tắt mở dialog
@@ -128,66 +127,67 @@ export default function ImportOrderDetailList() {
     setOpenDialog(false);
   };
 
-  // hàm này chỉ chạy khi đang xem detail
   const excuteAfterGetList = (globalStateNewest) => {
-    if (!globalStateNewest.importOrderDetail.isSuccess) {
+    if (!globalStateNewest.billDetail.isSuccess) {
       const variant = 'error';
       // variant could be success, error, warning, info, or default
-      enqueueSnackbar(globalStateNewest.importOrderDetail.errorMessage, { variant });
-    } else {
-      setListData(globalStateNewest.importOrderDetail.listData);
+      enqueueSnackbar(globalStateNewest.billDetail.errorMessage, { variant });
+    }
+  };
+
+  const excuteAfterGetUser = (globalStateNewest) => {
+    if (!globalStateNewest.myCustomUser.isSuccess) {
+      const variant = 'error';
+      // variant could be success, error, warning, info, or default
+      enqueueSnackbar(globalStateNewest.myCustomUser.errorMessage, { variant });
     }
   };
 
   // hàm này chỉ chạy khi đang xem detail
-  const excuteAfterGetStaffOfOrder = (globalStateNewest) => {
-    if (!globalStateNewest.importOrderDetail.isSuccess) {
+  const excuteAfterGetApprovedStaff = (globalStateNewest) => {
+    if (!globalStateNewest.staff.isSuccess) {
       const variant = 'error';
       // variant could be success, error, warning, info, or default
-      enqueueSnackbar(globalStateNewest.importOrderDetail.errorMessage, { variant });
+      enqueueSnackbar(globalStateNewest.staff.errorMessage, { variant });
+      setApprovedStaff(null);
     } else {
-      setStaffOfOrder(globalStateNewest.staff.staffOfOrder);
+      setApprovedStaff(globalStateNewest.staff.staffOfOrder);
     }
   };
 
-  const excuteAfterAddImportOrder = (globalStateNewest) => {
-    if (!globalStateNewest.importOrder.isSuccess) {
-      const variant = 'error';
-      // variant could be success, error, warning, info, or default
-      enqueueSnackbar(globalStateNewest.importOrderDetail.errorMessage, { variant });
-    } else {
-      const variant = 'success';
-      // variant could be success, error, warning, info, or default
-      enqueueSnackbar('Create success', { variant });
-      navigate(PATH_DASHBOARD.importOrder.list);
-    }
-  };
+  // const excuteAfterAddImportOrder = (globalStateNewest) => {
+  //   if (!globalStateNewest.importOrder.isSuccess) {
+  //     const variant = 'error';
+  //     // variant could be success, error, warning, info, or default
+  //     enqueueSnackbar(globalStateNewest.importOrderDetail.errorMessage, { variant });
+  //   } else {
+  //     const variant = 'success';
+  //     // variant could be success, error, warning, info, or default
+  //     enqueueSnackbar('Create success', { variant });
+  //     navigate(PATH_DASHBOARD.importOrder.list);
+  //   }
+  // };
 
-  // khởi tạo mảng listData, nếu như đang xem detail thì lấy danh sách từ api về, ko thì là rỗng
+  // lấy danh sách bill detail và user của bill
   useEffect(() => {
-    if (isDetail) {
-      dispatch(getImportOrderDetailListById(id, excuteAfterGetList));
-    } else {
-      setListData([]);
-    }
+    dispatch(getBillDetailListById(id, excuteAfterGetList));
+    dispatch(getMyCustomUser(userId, excuteAfterGetUser));
   }, [dispatch]);
 
-  // đồng thời nếu đang xem detail thì staff sẽ làm người làm đơn hàng, còn đang tạo mới thì của staff hiện tại
+  // lấy thông tin người đã chấp nhận đơn, nếu chưa có ai thì vẫn để null
   useEffect(() => {
-    if (isDetail) {
-      dispatch(getStaff(false, staffOfOrderId, excuteAfterGetStaffOfOrder));
-    } else {
-      setStaffOfOrder(currentStaff);
+    if (staffId) {
+      dispatch(getStaff(false, staffId, excuteAfterGetApprovedStaff));
     }
-  }, [dispatch]);
+  }, []);
 
   useEffect(() => {
     const newTotal = listData.reduce(
-      (total, value, index) => total + value.quantity * value.current_unit_perchase_price,
+      (total, value, index) => total + value.quantity * value.current_unit_sale_price,
       0
     );
     setTotalOfOrder(newTotal);
-  }, [listData.length]);
+  }, [listData]);
 
   // sort theo prop được đưa vào hàm
   const handleRequestSort = (event, property) => {
@@ -243,81 +243,58 @@ export default function ImportOrderDetailList() {
     setFilterValue(event.target.value); // value này là của biến target lấy giá trị của input, chứ ko phải prop của object import order nhé
   };
 
-  // bấm vào delete trên more menu
-  const handleDelete = (id) => {
-    setListData(listData.filter((item) => Number(item.product_id) !== Number(id)));
-    const variant = 'success';
-    // variant could be success, error, warning, info, or default
-    enqueueSnackbar('Delete success', { variant });
-  };
-
-  // ktra có trùng product trong danh sách ko
-  const isDuplicateProduct = (detail) => {
-    const duplicateProduct = listData.find((item) => Number(item.product_id) === Number(detail.product_id));
-    if (duplicateProduct) {
-      return true;
-    }
-    return false;
-  };
-
-  // thêm detail vào danh sách
-  const handleAddDetail = (newImportOrderDetail) => {
-    setListData([...listData, newImportOrderDetail]);
-  };
-
   const handleSubmitOrder = () => {
-    if (listData.length === 0) {
-      const variant = 'error';
-      // variant could be success, error, warning, info, or default
-      enqueueSnackbar('Import has no product!', { variant });
-    } else {
-      dispatch(addImportOrder(currentStaff.id, listData, excuteAfterAddImportOrder));
-    }
+    // if (listData.length === 0) {
+    //   const variant = 'error';
+    //   // variant could be success, error, warning, info, or default
+    //   enqueueSnackbar('Import has no product!', { variant });
+    // } else {
+    //   dispatch(addImportOrder(currentStaff.id, listData, excuteAfterAddImportOrder));
+    // }
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - listData.length) : 0;
 
-  const filteredImportOrderDetails = applySortFilter(listData, getComparator(order, orderBy), filterValue);
+  const filteredBillDetails = applySortFilter(listData, getComparator(order, orderBy), filterValue);
 
-  const isImportOrderDetailNotFound = filteredImportOrderDetails.length === 0;
+  const isBillDetailNotFound = filteredBillDetails.length === 0;
 
   return (
-    <Page title="Import Order Detail: List | Minimal-UI">
+    <Page title="Bill Detail: List | Minimal-UI">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="Import Order Detail List"
+          heading="Bill Detail List"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Import Order', href: PATH_DASHBOARD.importOrder.root },
-            { name: isDetail ? 'Detail' : 'Create' }
+            { name: 'Bill', href: PATH_DASHBOARD.bill.root },
+            { name: 'Detail' }
           ]}
-          action={
-            !isDetail && (
-              <Button variant="contained" onClick={handleClickOpenDialog} startIcon={<Icon icon={plusFill} />}>
-                New Import Order Detail
-              </Button>
-            )
-          }
         />
         <Grid container spacing={3}>
           <Grid item xs={12} md={3}>
             <Card sx={{ p: 4 }}>
               <Typography variant="h4" noWrap align="center">
-                Order Detail
+                Bill Detail
               </Typography>
               <Typography variant="body1" noWrap sx={{ mt: 2 }}>
-                Staff ID: {staffOfOrder ? staffOfOrder.id : ''}
+                User ID: {user ? user.id : ''}
               </Typography>
               <Typography variant="body1" noWrap sx={{ mt: 2 }}>
-                Name: {staffOfOrder ? staffOfOrder.name : ''}
+                User Name: {user ? user.name : ''}
+              </Typography>
+              <Typography variant="body1" noWrap sx={{ mt: 2 }}>
+                Staff ID: {approvedStaff ? approvedStaff.id : ''}
+              </Typography>
+              <Typography variant="body1" noWrap sx={{ mt: 2 }}>
+                Staff Name: {approvedStaff ? approvedStaff.name : ''}
               </Typography>
               <Typography variant="body1" noWrap sx={{ mt: 2 }}>
                 Total: {totalOfOrder}
               </Typography>
               <Stack direction="row" justifyContent="center" sx={{ mt: 3 }}>
-                {!isDetail && (
+                {!staffId && (
                   <Button variant="contained" size="large" color="info" onClick={handleSubmitOrder}>
-                    Submit Order
+                    Approve Bill
                   </Button>
                 )}
               </Stack>
@@ -344,45 +321,37 @@ export default function ImportOrderDetailList() {
                       onSelectAllClick={handleSelectAllClick}
                     />
                     <TableBody>
-                      {filteredImportOrderDetails
-                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                        .map((row) => {
-                          const { product_id, name, quantity, current_unit_perchase_price } = row;
-                          const isItemSelected = selected.indexOf(product_id) !== -1;
+                      {filteredBillDetails.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                        const { product_id, name, quantity, current_unit_sale_price } = row;
+                        const isItemSelected = selected.indexOf(product_id) !== -1;
 
-                          return (
-                            <TableRow
-                              hover
-                              key={product_id}
-                              tabIndex={-1}
-                              role="checkbox"
-                              selected={isItemSelected}
-                              aria-checked={isItemSelected}
-                            >
-                              <TableCell padding="checkbox">
-                                <Checkbox
-                                  checked={isItemSelected}
-                                  onChange={(event) => handleClick(event, product_id)}
-                                />
-                              </TableCell>
+                        return (
+                          <TableRow
+                            hover
+                            key={product_id}
+                            tabIndex={-1}
+                            role="checkbox"
+                            selected={isItemSelected}
+                            aria-checked={isItemSelected}
+                          >
+                            <TableCell padding="checkbox">
+                              <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, product_id)} />
+                            </TableCell>
 
-                              <TableCell align="left">{product_id}</TableCell>
-                              <TableCell align="left">{name}</TableCell>
-                              <TableCell align="left">{quantity}</TableCell>
-                              <TableCell align="left">{current_unit_perchase_price}</TableCell>
-                              <TableCell align="right">
-                                {!isDetail && <MyCustomListMoreMenu onDelete={() => handleDelete(product_id)} />}
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
+                            <TableCell align="left">{product_id}</TableCell>
+                            <TableCell align="left">{name}</TableCell>
+                            <TableCell align="left">{quantity}</TableCell>
+                            <TableCell align="left">{current_unit_sale_price}</TableCell>
+                          </TableRow>
+                        );
+                      })}
                       {emptyRows > 0 && (
                         <TableRow style={{ height: 53 * emptyRows }}>
                           <TableCell colSpan={6} />
                         </TableRow>
                       )}
                     </TableBody>
-                    {isImportOrderDetailNotFound && (
+                    {isBillDetailNotFound && (
                       <TableBody>
                         <TableRow>
                           <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -408,12 +377,6 @@ export default function ImportOrderDetailList() {
           </Grid>
         </Grid>
       </Container>
-      <ImportOrderDetailNewFormDialog
-        open={openDialog}
-        handleCloseDialog={handleCloseDialog}
-        isDuplicateProduct={isDuplicateProduct}
-        handleAgree={handleAddDetail}
-      />
     </Page>
   );
 }
