@@ -3,6 +3,7 @@ import { Navigate, useRoutes, useLocation } from 'react-router-dom';
 // layouts
 import MainLayout from '../layouts/main';
 import DashboardLayout from '../layouts/dashboard';
+import SalePageLayout from '../layouts/salePage';
 import LogoOnlyLayout from '../layouts/LogoOnlyLayout';
 // guards
 import GuestGuard from '../guards/GuestGuard';
@@ -186,6 +187,17 @@ export default function Router() {
         },
         { path: 'calendar', element: <Calendar /> },
         { path: 'kanban', element: <Kanban /> }
+      ]
+    },
+
+    {
+      path: 'sale-page',
+      element: <SalePageLayout />,
+      children: [
+        { element: <Navigate to="/sale-page/shop" replace /> },
+        { path: 'shop', element: <EcommerceShop /> },
+        { path: 'product/:name', element: <EcommerceProductDetails /> },
+        { path: 'checkout', element: <EcommerceCheckout /> }
       ]
     },
 

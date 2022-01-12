@@ -10,6 +10,7 @@ const isValidToken = (accessToken) => {
     return false;
   }
 
+  // nó kiểm tra thời gian hết session, giải mã token ra sẽ thấy
   const decoded = jwtDecode(accessToken);
   const currentTime = Date.now() / 1000;
 

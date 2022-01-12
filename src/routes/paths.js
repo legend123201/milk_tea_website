@@ -6,6 +6,7 @@ function path(root, sublink) {
 
 const ROOTS_AUTH = '/auth';
 const ROOTS_DASHBOARD = '/dashboard';
+const ROOTS_SALEPAGE = '/sale-page';
 
 // ----------------------------------------------------------------------
 
@@ -106,6 +107,13 @@ export const PATH_DASHBOARD = {
     postById: path(ROOTS_DASHBOARD, '/blog/post/apply-these-7-secret-techniques-to-improve-event'),
     newPost: path(ROOTS_DASHBOARD, '/blog/new-post')
   }
+};
+
+export const PATH_SALEPAGE = {
+  root: ROOTS_SALEPAGE,
+  shop: path(ROOTS_SALEPAGE, '/shop'),
+  product: path(ROOTS_SALEPAGE, '/product/:name'),
+  checkout: path(ROOTS_SALEPAGE, '/checkout')
 };
 
 export const PATH_DOCS = 'https://docs-minimals.vercel.app/introduction';

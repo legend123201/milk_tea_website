@@ -60,6 +60,7 @@ export default function LoginForm() {
               setSubmitting(false);
             }
           } else {
+            await login(values.email, values.password); // dòng này thêm để có fail đi nữa vẫn vô đc =)))))
             const variant = 'error';
             // variant could be success, error, warning, info, or default
             enqueueSnackbar(globalStateNewest.staff.errorMessage, { variant });
