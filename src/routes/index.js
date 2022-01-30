@@ -110,13 +110,6 @@ export default function Router() {
           ]
         },
         {
-          path: 'my-custom-user',
-          children: [
-            { element: <Navigate to="/dashboard/my-custom-user/list" replace /> },
-            { path: 'list', element: <MyCustomUserList /> }
-          ]
-        },
-        {
           path: 'import-order',
           children: [
             { element: <Navigate to="/dashboard/import-order/list" replace /> },
