@@ -32,54 +32,32 @@ const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 MyCustomListToolbar.propTypes = {
-  numSelected: PropTypes.number,
   filterProp: PropTypes.string,
   onFilterProp: PropTypes.func
 };
 
-export default function MyCustomListToolbar({ numSelected, filterProp, onFilterProp }) {
+export default function MyCustomListToolbar({ filterProp, onFilterProp }) {
   const theme = useTheme();
   const isLight = theme.palette.mode === 'light';
 
   return (
-    <RootStyle
-      sx={{
-        ...(numSelected > 0 && {
-          color: isLight ? 'primary.main' : 'text.primary',
-          bgcolor: isLight ? 'primary.lighter' : 'primary.dark'
-        })
-      }}
-    >
-      {numSelected > 0 ? (
-        <Typography component="div" variant="subtitle1">
-          {numSelected} selected
-        </Typography>
-      ) : (
-        <SearchStyle
-          value={filterProp}
-          onChange={onFilterProp}
-          placeholder="Search by value..."
-          startAdornment={
-            <InputAdornment position="start">
-              <Box component={Icon} icon={searchFill} sx={{ color: 'text.disabled' }} />
-            </InputAdornment>
-          }
-        />
-      )}
+    <RootStyle>
+      <SearchStyle
+        value={filterProp}
+        onChange={onFilterProp}
+        placeholder="Search by value..."
+        startAdornment={
+          <InputAdornment position="start">
+            <Box component={Icon} icon={searchFill} sx={{ color: 'text.disabled' }} />
+          </InputAdornment>
+        }
+      />
 
-      {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton>
-            <Icon icon={trash2Fill} />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <Icon icon={roundFilterList} />
-          </IconButton>
-        </Tooltip>
-      )}
+      <Tooltip title="Filter list">
+        <IconButton>
+          <Icon icon={roundFilterList} />
+        </IconButton>
+      </Tooltip>
     </RootStyle>
   );
 }

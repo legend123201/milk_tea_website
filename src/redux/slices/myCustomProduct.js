@@ -7,6 +7,7 @@ import axios from '../../utils/myCustomAxios';
 
 const initialState = {
   listData: [],
+  data: null,
   isLoading: false,
   isSuccess: null,
   errorMessage: ''
@@ -33,6 +34,13 @@ const slice = createSlice({
       state.isLoading = false;
       state.isSuccess = true;
       state.listData = action.payload;
+    },
+
+    // GET PRODUCT
+    getMyCustomProductSuccess(state, action) {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.data = action.payload;
     },
 
     // ADD PRODUCTS
@@ -68,6 +76,22 @@ export function getMyCustomProductList(myCallBack) {
     try {
       const response = await axios.get('/products');
       dispatch(slice.actions.getMyCustomProductListSuccess(response.data.data));
+    } catch (e) {
+      console.log(e);
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
+      dispatch(slice.actions.hasError(messageError));
+    } finally {
+      if (myCallBack) myCallBack(getState());
+    }
+  };
+}
+
+export function getMyCustomProduct(id, myCallBack) {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await axios.get(`/products/${id}`);
+      dispatch(slice.actions.getMyCustomProductSuccess(response.data.data[0]));
     } catch (e) {
       console.log(e);
       const messageError = e.message ? e.message : defaultErrorString + e.toString();

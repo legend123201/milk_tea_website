@@ -42,6 +42,7 @@ const rootReducer = combineReducers({
   calendar: calendarReducer,
   kanban: kanbanReducer,
   product: persistReducer(productPersistConfig, productReducer),
+
   todo: todoReducer,
   staff: staffReducer,
   myCustomProduct: myCustomProductReducer,

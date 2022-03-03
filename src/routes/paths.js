@@ -112,7 +112,7 @@ export const PATH_DASHBOARD = {
 export const PATH_SALEPAGE = {
   root: ROOTS_SALEPAGE,
   shop: path(ROOTS_SALEPAGE, '/shop'),
-  product: path(ROOTS_SALEPAGE, '/product/:name'),
+  product: path(ROOTS_SALEPAGE, '/product/:id'),
   checkout: path(ROOTS_SALEPAGE, '/checkout')
 };
 

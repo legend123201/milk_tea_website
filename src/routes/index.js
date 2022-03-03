@@ -188,9 +188,9 @@ export default function Router() {
       element: <SalePageLayout />,
       children: [
         { element: <Navigate to="/sale-page/shop" replace /> },
-        { path: 'shop', element: <EcommerceShop /> },
-        { path: 'product/:name', element: <EcommerceProductDetails /> },
-        { path: 'checkout', element: <EcommerceCheckout /> }
+        { path: 'shop', element: <MyCustomEcommerceShop /> },
+        { path: 'product/:id', element: <MyCustomEcommerceProductDetails /> },
+        { path: 'checkout', element: <MyCustomEcommerceCheckout /> }
       ]
     },
 
@@ -293,6 +293,7 @@ const GeneralEcommerce = Loadable(lazy(() => import('../pages/dashboard/GeneralE
 const GeneralAnalytics = Loadable(lazy(() => import('../pages/dashboard/GeneralAnalytics')));
 const GeneralBanking = Loadable(lazy(() => import('../pages/dashboard/GeneralBanking')));
 const GeneralBooking = Loadable(lazy(() => import('../pages/dashboard/GeneralBooking')));
+// my custom route ==================================
 const TodoList = Loadable(lazy(() => import('../pages/dashboard/TodoList')));
 const TodoCreate = Loadable(lazy(() => import('../pages/dashboard/TodoCreate')));
 const MyCustomProductList = Loadable(lazy(() => import('../pages/dashboard/MyCustomProductList')));
@@ -301,6 +302,13 @@ const MyCustomUserList = Loadable(lazy(() => import('../pages/dashboard/MyCustom
 const BillList = Loadable(lazy(() => import('../pages/dashboard/BillList')));
 const ImportOrderList = Loadable(lazy(() => import('../pages/dashboard/ImportOrderList')));
 const ImportOrderDetailList = Loadable(lazy(() => import('../pages/dashboard/ImportOrderDetailList')));
+
+const MyCustomEcommerceShop = Loadable(lazy(() => import('../pages/salePage/MyCustomEcommerceShop')));
+const MyCustomEcommerceProductDetails = Loadable(
+  lazy(() => import('../pages/salePage/MyCustomEcommerceProductDetails'))
+);
+const MyCustomEcommerceCheckout = Loadable(lazy(() => import('../pages/salePage/MyCustomEcommerceCheckout')));
+// ===================================================
 const BillDetailList = Loadable(lazy(() => import('../pages/dashboard/BillDetailList')));
 const EcommerceShop = Loadable(lazy(() => import('../pages/dashboard/EcommerceShop')));
 const EcommerceProductDetails = Loadable(lazy(() => import('../pages/dashboard/EcommerceProductDetails')));
