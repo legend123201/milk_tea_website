@@ -15,7 +15,7 @@ import useSettings from '../../hooks/useSettings';
 // components
 import Page from '../../components/Page';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
-import { CheckoutCart } from '../../components/_dashboard/e-commerce/checkout';
+import { CheckoutCart } from '../../components/_salepage/e-commerce/checkout';
 
 // ----------------------------------------------------------------------
 

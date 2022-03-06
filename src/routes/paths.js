@@ -113,7 +113,8 @@ export const PATH_SALEPAGE = {
   root: ROOTS_SALEPAGE,
   shop: path(ROOTS_SALEPAGE, '/shop'),
   product: path(ROOTS_SALEPAGE, '/product/:id'),
-  checkout: path(ROOTS_SALEPAGE, '/checkout')
+  checkout: path(ROOTS_SALEPAGE, '/checkout'),
+  myBill: path(ROOTS_SALEPAGE, '/my-bills')
 };
 
 export const PATH_DOCS = 'https://docs-minimals.vercel.app/introduction';

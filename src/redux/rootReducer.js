@@ -11,12 +11,13 @@ import calendarReducer from './slices/calendar';
 import kanbanReducer from './slices/kanban';
 import todoReducer from './slices/todo';
 import staffReducer from './slices/staff';
-import myCustomProductReducer from './slices/myCustomProduct';
 import myCustomUserReducer from './slices/myCustomUser';
+import myCustomProductReducer from './slices/myCustomProduct';
 import importOrderReducer from './slices/importOrder';
 import importOrderDetailReducer from './slices/importOrderDetail';
 import billReducer from './slices/bill';
 import billDetailReducer from './slices/billDetail';
+import cartReducer from './slices/cart';
 
 // ----------------------------------------------------------------------
 
@@ -50,7 +51,8 @@ const rootReducer = combineReducers({
   importOrder: importOrderReducer,
   importOrderDetail: importOrderDetailReducer,
   bill: billReducer,
-  billDetail: billDetailReducer
+  billDetail: billDetailReducer,
+  cart: cartReducer
 });
 
 export { rootPersistConfig, rootReducer };

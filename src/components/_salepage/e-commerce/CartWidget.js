@@ -36,8 +36,8 @@ const RootStyle = styled(RouterLink)(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function CartWidget() {
-  const { checkout } = useSelector((state) => state.product);
-  const totalItems = sum(checkout.cart.map((item) => item.quantity));
+  const { listData } = useSelector((state) => state.cart);
+  const totalItems = listData.length;
 
   return (
     <RootStyle to={PATH_SALEPAGE.checkout}>

@@ -8,6 +8,7 @@ import { Backdrop, Container, Typography, CircularProgress, Stack } from '@mui/m
 import { useDispatch, useSelector } from '../../redux/store';
 import { getProducts, filterProducts } from '../../redux/slices/product';
 import { getMyCustomProductList } from '../../redux/slices/myCustomProduct';
+import { getCartList } from '../../redux/slices/cart';
 // routes
 import { PATH_DASHBOARD } from '../../routes/paths';
 // utils
@@ -33,16 +34,28 @@ export default function EcommerceShop() {
   const { listData, isLoading } = useSelector((state) => state.myCustomProduct);
   const { enqueueSnackbar } = useSnackbar();
 
-  const excuteAfterGetList = (globalStateNewest) => {
-    if (!globalStateNewest.myCustomProduct.isSuccess) {
-      const variant = 'error';
-      // variant could be success, error, warning, info, or default
-      enqueueSnackbar(globalStateNewest.myCustomProduct.errorMessage, { variant });
-    }
-  };
+  useEffect(() => {
+    const excuteAfterGetList = (globalStateNewest) => {
+      if (!globalStateNewest.myCustomProduct.isSuccess) {
+        const variant = 'error';
+        // variant could be success, error, warning, info, or default
+        enqueueSnackbar(globalStateNewest.myCustomProduct.errorMessage, { variant });
+      }
+    };
+
+    dispatch(getMyCustomProductList(excuteAfterGetList));
+  }, [dispatch]);
 
   useEffect(() => {
-    dispatch(getMyCustomProductList(excuteAfterGetList));
+    const excuteAfterGetList = (globalStateNewest) => {
+      if (!globalStateNewest.cart.isSuccess) {
+        const variant = 'error';
+        // variant could be success, error, warning, info, or default
+        enqueueSnackbar(globalStateNewest.cart.errorMessage, { variant });
+      }
+    };
+
+    dispatch(getCartList(1, excuteAfterGetList));
   }, [dispatch]);
 
   return (

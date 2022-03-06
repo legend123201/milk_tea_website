@@ -1,6 +1,7 @@
 import { Icon } from '@iconify/react';
 import { useSnackbar } from 'notistack';
 import { useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import homeFill from '@iconify/icons-eva/home-fill';
 import personFill from '@iconify/icons-eva/person-fill';
 import settings2Fill from '@iconify/icons-eva/settings-2-fill';
@@ -9,32 +10,32 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { alpha } from '@mui/material/styles';
 import { Button, Box, Divider, MenuItem, Typography } from '@mui/material';
 // routes
-import { PATH_DASHBOARD } from '../../routes/paths';
+import { PATH_SALEPAGE } from '../../routes/paths';
 // hooks
 import useAuth from '../../hooks/useAuth';
 import useIsMountedRef from '../../hooks/useIsMountedRef';
 // components
 import { MIconButton } from '../../components/@material-extend';
-import MyAvatar from '../../components/MyAvatar';
+import MyCustomMyAvatar from '../../components/MyCustomMyAvatar';
 import MenuPopover from '../../components/MenuPopover';
 
 // ----------------------------------------------------------------------
 
 const MENU_OPTIONS = [
   {
-    label: 'Home',
+    label: 'Shop',
     icon: homeFill,
-    linkTo: '/'
+    linkTo: PATH_SALEPAGE.root
   },
   {
     label: 'Profile',
     icon: personFill,
-    linkTo: PATH_DASHBOARD.user.profile
+    linkTo: '#'
   },
   {
-    label: 'Settings',
+    label: 'My pending bill',
     icon: settings2Fill,
-    linkTo: PATH_DASHBOARD.user.account
+    linkTo: PATH_SALEPAGE.myBill
   }
 ];
 
@@ -45,8 +46,9 @@ export default function AccountPopover() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const isMountedRef = useIsMountedRef();
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const [open, setOpen] = useState(false);
+  const user = useSelector((state) => state.myCustomUser.data);
 
   const handleOpen = () => {
     setOpen(true);
@@ -90,16 +92,16 @@ export default function AccountPopover() {
           })
         }}
       >
-        <MyAvatar />
+        <MyCustomMyAvatar />
       </MIconButton>
 
       <MenuPopover open={open} onClose={handleClose} anchorEl={anchorRef.current} sx={{ width: 220 }}>
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle1" noWrap>
-            {user.displayName}
+            {user?.name}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {user.email}
+            {user?.email}
           </Typography>
         </Box>
 

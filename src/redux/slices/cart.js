@@ -1,4 +1,3 @@
-import { map, filter } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
 // utils
 import axios from '../../utils/myCustomAxios';
@@ -7,14 +6,13 @@ import axios from '../../utils/myCustomAxios';
 
 const initialState = {
   listData: [],
-  data: null,
   isLoading: false,
   isSuccess: null,
   errorMessage: ''
 };
 
 const slice = createSlice({
-  name: 'myCustomUser',
+  name: 'cart',
   initialState,
   reducers: {
     // START LOADING
@@ -29,22 +27,15 @@ const slice = createSlice({
       state.errorMessage = action.payload;
     },
 
-    // GET USERS
-    getMyCustomUserListSuccess(state, action) {
+    // GET CARTS
+    getCartListSuccess(state, action) {
       state.isLoading = false;
       state.isSuccess = true;
       state.listData = action.payload;
     },
 
-    // GET USER
-    getMyCustomUserSuccess(state, action) {
-      state.isLoading = false;
-      state.isSuccess = true;
-      state.data = action.payload;
-    },
-
-    // DELETE USERS
-    deleteMyCustomUserSuccess(state, action) {
+    // ADD CART
+    addCartSuccess(state, action) {
       state.isLoading = false;
       state.isSuccess = true;
     }
@@ -58,12 +49,12 @@ export default slice.reducer;
 
 const defaultErrorString = 'Can not connect to API Server! ';
 
-export function getMyCustomUserList(myCallBack) {
+export function getCartList(userId, myCallBack) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get('/users');
-      dispatch(slice.actions.getMyCustomUserListSuccess(response.data.data));
+      const response = await axios.get(`/carts/user_id/${userId}`);
+      dispatch(slice.actions.getCartListSuccess(response.data.data));
     } catch (e) {
       console.log(e);
       const messageError = e.message ? e.message : defaultErrorString + e.toString();
@@ -74,28 +65,12 @@ export function getMyCustomUserList(myCallBack) {
   };
 }
 
-export function getMyCustomUser(userId, myCallBack) {
+export function addCart(newCart, myCallBack) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get(`/users/${userId}`);
-      dispatch(slice.actions.getMyCustomUserSuccess(response.data.data[0]));
-    } catch (e) {
-      console.log(e);
-      const messageError = e.message ? e.message : defaultErrorString + e.toString();
-      dispatch(slice.actions.hasError(messageError));
-    } finally {
-      if (myCallBack) myCallBack(getState());
-    }
-  };
-}
-
-export function deleteMyCustomUser(deleteId, myCallBack) {
-  return async (dispatch, getState) => {
-    dispatch(slice.actions.startLoading());
-    try {
-      const response = await axios.delete(`/users/${deleteId}`);
-      dispatch(slice.actions.deleteMyCustomUserSuccess());
+      const response = await axios.post('/carts', newCart);
+      dispatch(slice.actions.addCartSuccess());
     } catch (e) {
       const messageError = e.message ? e.message : defaultErrorString + e.toString();
       dispatch(slice.actions.hasError(messageError));

@@ -25,11 +25,14 @@ import {
   Typography,
   FormHelperText
 } from '@mui/material';
+
+import { useSnackbar } from 'notistack';
+
 // redux
 import { useDispatch, useSelector } from '../../../../redux/store';
-import { addCart, onGotoStep } from '../../../../redux/slices/product';
+import { addCart, getCartList } from '../../../../redux/slices/cart';
 // routes
-import { PATH_DASHBOARD } from '../../../../routes/paths';
+import { PATH_SALEPAGE } from '../../../../routes/paths';
 // utils
 import { fShortenNumber, fCurrency } from '../../../../utils/formatNumber';
 //
@@ -104,14 +107,20 @@ export default function ProductDetailsSumary({ product }) {
   const theme = useTheme();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
+
   const { id, name, quantity_in_stock, unit_perchase_price, unit_sale_price, measure_unit, image } = product;
 
-  const onAddCart = (product) => {
-    // dispatch(addCart(product));
-  };
+  const loadBackCartList = () => {
+    const excuteAfterGetList = (globalStateNewest) => {
+      if (!globalStateNewest.cart.isSuccess) {
+        const variant = 'error';
+        // variant could be success, error, warning, info, or default
+        enqueueSnackbar(globalStateNewest.cart.errorMessage, { variant });
+      }
+    };
 
-  const handleBuyNow = () => {
-    // dispatch(onGotoStep(0));
+    dispatch(getCartList(1, excuteAfterGetList));
   };
 
   const formik = useFormik({
@@ -121,16 +130,26 @@ export default function ProductDetailsSumary({ product }) {
     },
     onSubmit: async (values, { setSubmitting }) => {
       try {
-        console.log(values);
-        // if (!alreadyProduct) {
-        //   onAddCart({
-        //     ...values,
-        //     subtotal: values.price * values.quantity
-        //   });
-        // }
+        const excuteAfterAddCart = (globalStateNewest) => {
+          if (globalStateNewest.cart.isSuccess) {
+            const variant = 'success';
+            enqueueSnackbar('Add to cart success', { variant });
+            loadBackCartList();
+          } else {
+            const variant = 'error';
+            // variant could be success, error, warning, info, or default
+            enqueueSnackbar(globalStateNewest.cart.errorMessage, { variant });
+          }
+        };
+
+        const newCart = {
+          user_id: 1,
+          product_id: id,
+          quantity: values.quantity
+        };
+
+        dispatch(addCart(newCart, excuteAfterAddCart));
         setSubmitting(false);
-        // handleBuyNow();
-        // navigate(PATH_DASHBOARD.eCommerce.checkout);
       } catch (error) {
         setSubmitting(false);
       }
@@ -139,11 +158,6 @@ export default function ProductDetailsSumary({ product }) {
 
   const { values, touched, errors, getFieldProps, handleSubmit } = formik;
 
-  const handleAddCart = () => {
-   
-  };
-
-  console.log(values.quantity >= quantity_in_stock);
   return (
     <RootStyle>
       <FormikProvider value={formik}>
@@ -187,16 +201,21 @@ export default function ProductDetailsSumary({ product }) {
             <Button
               fullWidth
               size="large"
-              type="button"
+              type="submit"
               color="warning"
               variant="contained"
               startIcon={<Icon icon={roundAddShoppingCart} />}
-              onClick={handleAddCart}
               sx={{ whiteSpace: 'nowrap' }}
             >
               Add to Cart
             </Button>
-            <Button fullWidth size="large" type="submit" variant="contained">
+            <Button
+              fullWidth
+              size="large"
+              type="button"
+              variant="contained"
+              onClick={() => navigate(PATH_SALEPAGE.checkout)}
+            >
               Buy Now
             </Button>
           </Stack>

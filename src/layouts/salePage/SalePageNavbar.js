@@ -70,7 +70,7 @@ export default function SalePageNavbar({ onOpenSidebar }) {
           <LanguagePopover />
           <NotificationsPopover />
           <ContactsPopover />
-          {/* <AccountPopover /> */}
+          <AccountPopover />
         </Stack>
       </ToolbarStyle>
     </RootStyle>

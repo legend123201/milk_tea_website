@@ -1,7 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 // material
 import { styled, useTheme } from '@mui/material/styles';
+// redux
+import { useDispatch } from 'react-redux';
+import { getMyCustomUser } from '../../redux/slices/myCustomUser';
 // hooks
 import useCollapseDrawer from '../../hooks/useCollapseDrawer';
 //
@@ -34,9 +38,25 @@ const MainStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function SalePageLayout() {
+  const dispatch = useDispatch();
+  const enqueueSnackbar = useSnackbar();
   const theme = useTheme();
   const { collapseClick } = useCollapseDrawer();
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const excuteAfterGetItem = (globalStateNewest) => {
+      const stateMyCustomUser = globalStateNewest.myCustomUser;
+
+      if (!stateMyCustomUser.isSuccess) {
+        const variant = 'error';
+        // variant could be success, error, warning, info, or default
+        enqueueSnackbar(stateMyCustomUser.errorMessage, { variant });
+      }
+    };
+
+    dispatch(getMyCustomUser(1, excuteAfterGetItem));
+  }, [dispatch]);
 
   return (
     <RootStyle>

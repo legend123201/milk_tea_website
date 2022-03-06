@@ -190,7 +190,9 @@ export default function Router() {
         { element: <Navigate to="/sale-page/shop" replace /> },
         { path: 'shop', element: <MyCustomEcommerceShop /> },
         { path: 'product/:id', element: <MyCustomEcommerceProductDetails /> },
-        { path: 'checkout', element: <MyCustomEcommerceCheckout /> }
+        { path: 'checkout', element: <MyCustomEcommerceCheckout /> },
+        { path: 'my-bills', element: <MyBills /> },
+        { path: 'my-bill-detail-list', element: <MyBillDetailList /> }
       ]
     },
 
@@ -308,6 +310,9 @@ const MyCustomEcommerceProductDetails = Loadable(
   lazy(() => import('../pages/salePage/MyCustomEcommerceProductDetails'))
 );
 const MyCustomEcommerceCheckout = Loadable(lazy(() => import('../pages/salePage/MyCustomEcommerceCheckout')));
+const MyBills = Loadable(lazy(() => import('../pages/salePage/MyBills')));
+const MyBillDetailList = Loadable(lazy(() => import('../pages/salePage/MyBillDetailList')));
+
 // ===================================================
 const BillDetailList = Loadable(lazy(() => import('../pages/dashboard/BillDetailList')));
 const EcommerceShop = Loadable(lazy(() => import('../pages/dashboard/EcommerceShop')));

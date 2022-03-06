@@ -90,7 +90,13 @@ export default function MyCustomListMoreMenu({ onDelete, onEdit, onDetail }) {
           </MenuItem>
         )}
       </Menu>
-      <MyCustomAlertDialog open={openDialog} handleCloseDialog={handleCloseDialog} handleAgree={onDelete} />
+      <MyCustomAlertDialog
+        title="Warning"
+        contentText="Are you sure you want to delete?"
+        open={openDialog}
+        handleCloseDialog={handleCloseDialog}
+        handleAgree={onDelete}
+      />
     </>
   );
 }
