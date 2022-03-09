@@ -1,24 +1,17 @@
-import { useSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
+import { useSnackbar } from 'notistack';
 import { sum } from 'lodash';
 import { Icon } from '@iconify/react';
-import { Link as RouterLink } from 'react-router-dom';
-import { useFormik, Form, FormikProvider } from 'formik';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import arrowIosBackFill from '@iconify/icons-eva/arrow-ios-back-fill';
 // material
 import { Grid, Card, Button, CardHeader, Typography } from '@mui/material';
 import MyCustomAlertDialog from '../../../MyCustomAlertDialog';
 // slices
 import { getCartList } from '../../../../redux/slices/cart';
+import { addBill } from '../../../../redux/slices/bill';
 // redux
 import { useDispatch, useSelector } from '../../../../redux/store';
-import {
-  deleteCart,
-  onNextStep,
-  applyDiscount,
-  increaseQuantity,
-  decreaseQuantity
-} from '../../../../redux/slices/product';
 // routes
 import { PATH_SALEPAGE } from '../../../../routes/paths';
 //
@@ -32,8 +25,10 @@ import CheckoutProductList from './CheckoutProductList';
 export default function CheckoutCart() {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
   // useSelector
   const { listData } = useSelector((state) => state.cart);
+  const currentUser = useSelector((state) => state.myCustomUser.data);
   // useState
   const [total, setTotal] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
@@ -42,10 +37,11 @@ export default function CheckoutCart() {
 
   useEffect(() => {
     const excuteAfterGetList = (globalStateNewest) => {
-      if (!globalStateNewest.cart.isSuccess) {
+      const stateCart = globalStateNewest.cart;
+      if (!stateCart.isSuccess) {
         const variant = 'error';
         // variant could be success, error, warning, info, or default
-        enqueueSnackbar(globalStateNewest.cart.errorMessage, { variant });
+        enqueueSnackbar(stateCart.errorMessage, { variant });
       }
     };
 
@@ -63,6 +59,31 @@ export default function CheckoutCart() {
     setOpenDialog(false);
   };
 
+  const handleAgreeCheckout = () => {
+    if (totalItems <= 0) {
+      const variant = 'error';
+      // variant could be success, error, warning, info, or default
+      enqueueSnackbar('You not have product in cart yet!', { variant });
+      return;
+    }
+
+    const excuteAfterAddBill = (globalStateNewest) => {
+      const stateBill = globalStateNewest.bill;
+
+      if (stateBill.isSuccess) {
+        const variant = 'success';
+        // variant could be success, error, warning, info, or default
+        enqueueSnackbar('Create bill success!', { variant });
+      } else {
+        const variant = 'error';
+        // variant could be success, error, warning, info, or default
+        enqueueSnackbar(stateBill.errorMessage, { variant });
+      }
+    };
+
+    dispatch(addBill(currentUser.id, excuteAfterAddBill));
+  };
+
   const totalItems = listData.length;
 
   return (
@@ -72,7 +93,7 @@ export default function CheckoutCart() {
         contentText="Are you sure you want to checkout?"
         open={openDialog}
         handleCloseDialog={handleCloseDialog}
-        handleAgree={() => {}}
+        handleAgree={handleAgreeCheckout}
       />
 
       <Grid container spacing={3}>

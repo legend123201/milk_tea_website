@@ -35,7 +35,7 @@ const MENU_OPTIONS = [
   {
     label: 'My pending bill',
     icon: settings2Fill,
-    linkTo: PATH_SALEPAGE.myBill
+    linkTo: PATH_SALEPAGE.myBills
   }
 ];
 

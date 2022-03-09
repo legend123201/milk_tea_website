@@ -25,13 +25,15 @@ import {
 } from '@mui/material';
 
 import { useSnackbar } from 'notistack';
+// utils
 import { fDateTime } from '../../utils/formatTime';
-
+import { fCurrency } from '../../utils/formatNumber';
 // redux
 import { useDispatch, useSelector } from '../../redux/store';
-import { getBillList } from '../../redux/slices/bill';
+import { getMyCustomProductList, deleteMyCustomProduct } from '../../redux/slices/myCustomProduct';
+import { getBillListByUserId } from '../../redux/slices/bill';
 // routes
-import { PATH_DASHBOARD } from '../../routes/paths';
+import { PATH_SALEPAGE } from '../../routes/paths';
 // hooks
 import useSettings from '../../hooks/useSettings';
 // components
@@ -49,12 +51,9 @@ import {
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'id', label: 'ID', alignRight: false },
   { id: 'datetime', label: 'Date Time', alignRight: false },
-  { id: 'user_name', label: 'User Name', alignRight: false },
-  { id: 'user_id', label: 'User ID', alignRight: false },
-  { id: 'staff_name', label: 'Staff Name', alignRight: false },
-  { id: 'staff_id', label: 'Staff ID', alignRight: false },
+  { id: 'total', label: 'Price', alignRight: false },
+  { id: 'staff_id', label: 'Status', alignRight: false },
   { id: '' }
 ];
 
@@ -70,65 +69,60 @@ function descendingComparator(a, b, orderBy) {
   return 0;
 }
 
+// hàm này trả về cho mình "1 cái hàm"
 function getComparator(order, orderBy) {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// hàm sort của ô input search duy nhất ở trang list, ở đây mình sort theo user_id của bill
+// hàm orderBy và filter (theo datetime của bill) của table
 function applySortFilter(array, comparator, query) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
+  // nếu có filter thì ưu tiên filter
+  if (query) {
+    // filter bằng hàm filter có sẵn có lodash, lodash mặc định xếp chữ tăng dần theo alphabet, indexOf mà khác -1 nghĩa là có tìm thấy
+    return filter(array, (_myBill) => fDateTime(_myBill.datetime).toLowerCase().indexOf(query.toLowerCase()) !== -1);
+  }
+
+  // không có filter mới order by
+  const stabilizedThis = array.map((arrayElement, index) => [arrayElement, index]);
+
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
+    // kiểm tra nếu 2 phần tử có "giá trị mà lấy để so sánh" (orderBy) bằng nhau thì mình sắp theo index của chúng
     if (order !== 0) return order;
     return a[1] - b[1];
   });
-  if (query) {
-    return filter(
-      array,
-      (_bill) => _bill.user_id.toString().toLowerCase().indexOf(query.toString().toLowerCase()) !== -1
-    );
-  }
-  return stabilizedThis.map((el) => el[0]);
+
+  return stabilizedThis.map((stabilizedElement) => stabilizedElement[0]);
 }
 
-export default function BillList() {
+export default function MyBills() {
   const { themeStretch } = useSettings();
   const theme = useTheme();
   const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.myCustomUser.data);
   const { listData } = useSelector((state) => state.bill); // lấy data list trên redux
   const [page, setPage] = useState(0); // biến giữ page hiện tại là page nào
   const [order, setOrder] = useState('asc'); // sắp xếp tăng dần hay giảm dần, mặc định mình để tăng dần
-  const [selected, setSelected] = useState([]); // đây là mảng chứa id của những phần tử nào đc chọn (mảng number vì id là number)
-  const [orderBy, setOrderBy] = useState('id'); // biến lưu trữ đang sort theo prop nào, mặc định mình sẽ để là id
+  const [orderBy, setOrderBy] = useState('a'); // biến lưu trữ đang sort theo prop nào, mặc định mình sẽ ko sort
   const [filterValue, setFilterValue] = useState(''); // biến để tìm kiếm theo value, ô search duy nhất của trang list
   const [rowsPerPage, setRowsPerPage] = useState(5); // số dòng mỗi trang
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
   const excuteAfterGetList = (globalStateNewest) => {
-    if (!globalStateNewest.bill.isSuccess) {
-      const variant = 'error';
-      // variant could be success, error, warning, info, or default
-      enqueueSnackbar(globalStateNewest.bill.errorMessage, { variant });
-    }
-  };
+    const stateBill = globalStateNewest.bill;
 
-  const excuteAfterDelete = (globalStateNewest) => {
-    if (globalStateNewest.bill.isSuccess) {
-      const variant = 'success';
-      enqueueSnackbar('Delete success', { variant });
-      dispatch(getBillList(excuteAfterGetList));
-    } else {
+    if (!stateBill.isSuccess) {
       const variant = 'error';
       // variant could be success, error, warning, info, or default
-      enqueueSnackbar(globalStateNewest.bill.errorMessage, { variant });
+      enqueueSnackbar(stateBill.errorMessage, { variant });
     }
   };
 
   useEffect(() => {
-    dispatch(getBillList(excuteAfterGetList));
+    dispatch(getBillListByUserId(currentUser.id, excuteAfterGetList));
   }, [dispatch]);
 
   // sort theo prop được đưa vào hàm
@@ -136,39 +130,6 @@ export default function BillList() {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
-  };
-
-  // cái này là event cho ô checkbox tổng
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = listData.map((n) => n.id); // lấy tất cả phần tử
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  // hàm set cái mảng những phần tử đang đc chọn
-  const handleClick = (event, id) => {
-    // xài indexOf cho mảng string hoặc number cực kì tối ưu
-    const selectedIndex = selected.indexOf(id); // vị trí của phần tử vừa click
-    let newSelected = [];
-
-    // nếu index là -1 nghĩa là ko kiếm thấy, vậy đơn giản mình thêm id vào mảng chứa những id đang đc chọn
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
-    } else if (selectedIndex === 0) {
-      /* 
-      từ else if này đổ xuống nghĩa là mình có kiếm thấy, vậy đang có mà click chọn thì sẽ bỏ chọn, vậy những dòng lệnh 
-      phía dưới là để loại 1 phần tử ra khỏi mảng, rất hay để học hỏi
-      */
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-    }
-    setSelected(newSelected);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -182,38 +143,31 @@ export default function BillList() {
 
   // hàm set giá trị của ô search cho biến filterValue ở trên
   const handleFilterByValue = (event) => {
-    setFilterValue(event.target.value); // value này là của biến target lấy giá trị của input, chứ ko phải prop của object import order nhé
+    setFilterValue(event.target.value); // value này là của biến target lấy giá trị của input, chứ ko phải prop của object my custom product nhé
   };
 
   // bấm vào detail trên more menu
-  const handleDetail = (id, userId, staffId) => {
-    navigate(`${PATH_DASHBOARD.bill.root}/${id}/${userId}/${staffId}/detail`);
+  const handleDetail = (bill_id) => {
+    navigate(`${PATH_SALEPAGE.root}/my-bill-detail-list/billId/${bill_id}`);
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - listData.length) : 0;
 
-  const filteredBills = applySortFilter(listData, getComparator(order, orderBy), filterValue);
+  // hàm này xử lý order và filter, nhưng cả 2 ko áp dụng cùng lúc được, và filter được ưu tiên hơn
+  const filteredMyBills = applySortFilter(listData, getComparator(order, orderBy), filterValue);
 
-  const isBillNotFound = filteredBills.length === 0;
+  const isMyBillsNotFound = filteredMyBills.length === 0;
 
   return (
-    <Page title="Bill: List | Minimal-UI">
+    <Page title="My Bill: List | Minimal-UI">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
           heading="Bill List"
-          links={[
-            { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Bill', href: PATH_DASHBOARD.bill.root },
-            { name: 'List' }
-          ]}
+          links={[{ name: 'Shop', href: PATH_SALEPAGE.root }, { name: 'Bill List' }]}
         />
 
         <Card>
-          <MyCustomListToolbar
-            numSelected={selected.length}
-            filterProp={filterValue}
-            onFilterProp={handleFilterByValue}
-          />
+          <MyCustomListToolbar filterProp={filterValue} onFilterProp={handleFilterByValue} />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
@@ -223,35 +177,28 @@ export default function BillList() {
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
                   rowCount={listData.length}
-                  numSelected={selected.length}
                   onRequestSort={handleRequestSort}
-                  onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredBills.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, datetime, user_name, user_id, staff_name, staff_id } = row;
-                    const isItemSelected = selected.indexOf(id) !== -1;
+                  {filteredMyBills.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, idx) => {
+                    const { bill_id, datetime, total, staff_id } = row;
 
                     return (
-                      <TableRow
-                        hover
-                        key={id}
-                        tabIndex={-1}
-                        role="checkbox"
-                        selected={isItemSelected}
-                        aria-checked={isItemSelected}
-                      >
-                        <TableCell padding="checkbox">
-                          <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, id)} />
-                        </TableCell>
-                        <TableCell align="left">{id}</TableCell>
+                      <TableRow hover key={idx} tabIndex={-1} role="checkbox">
                         <TableCell align="left">{fDateTime(datetime)}</TableCell>
-                        <TableCell align="left">{user_name}</TableCell>
-                        <TableCell align="left">{user_id}</TableCell>
-                        <TableCell align="left">{staff_name}</TableCell>
-                        <TableCell align="left">{staff_id}</TableCell>
+
+                        <TableCell align="left">{fCurrency(total)}</TableCell>
+                        <TableCell align="left">
+                          <Label
+                            variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
+                            color={(staff_id && 'success') || 'warning'}
+                          >
+                            {staff_id ? 'Verified' : 'Pending'}
+                          </Label>
+                        </TableCell>
+
                         <TableCell align="right">
-                          <MyCustomListMoreMenu onDetail={() => handleDetail(id, user_id, staff_id)} />
+                          <MyCustomListMoreMenu onDetail={() => handleDetail(bill_id)} />
                         </TableCell>
                       </TableRow>
                     );
@@ -262,7 +209,7 @@ export default function BillList() {
                     </TableRow>
                   )}
                 </TableBody>
-                {isBillNotFound && (
+                {isMyBillsNotFound && (
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>

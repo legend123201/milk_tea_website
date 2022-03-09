@@ -192,7 +192,7 @@ export default function Router() {
         { path: 'product/:id', element: <MyCustomEcommerceProductDetails /> },
         { path: 'checkout', element: <MyCustomEcommerceCheckout /> },
         { path: 'my-bills', element: <MyBills /> },
-        { path: 'my-bill-detail-list', element: <MyBillDetailList /> }
+        { path: 'my-bill-detail-list/billId/:id', element: <MyBillDetailList /> }
       ]
     },
 

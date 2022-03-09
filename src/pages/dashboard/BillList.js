@@ -101,7 +101,7 @@ export default function BillList() {
   const [page, setPage] = useState(0); // biến giữ page hiện tại là page nào
   const [order, setOrder] = useState('asc'); // sắp xếp tăng dần hay giảm dần, mặc định mình để tăng dần
   const [selected, setSelected] = useState([]); // đây là mảng chứa id của những phần tử nào đc chọn (mảng number vì id là number)
-  const [orderBy, setOrderBy] = useState('id'); // biến lưu trữ đang sort theo prop nào, mặc định mình sẽ để là id
+  const [orderBy, setOrderBy] = useState('id'); // biến lưu trữ đang sort theo prop nào, mặc định mình sẽ sort theo id
   const [filterValue, setFilterValue] = useState(''); // biến để tìm kiếm theo value, ô search duy nhất của trang list
   const [rowsPerPage, setRowsPerPage] = useState(5); // số dòng mỗi trang
   const navigate = useNavigate();
@@ -109,18 +109,6 @@ export default function BillList() {
 
   const excuteAfterGetList = (globalStateNewest) => {
     if (!globalStateNewest.bill.isSuccess) {
-      const variant = 'error';
-      // variant could be success, error, warning, info, or default
-      enqueueSnackbar(globalStateNewest.bill.errorMessage, { variant });
-    }
-  };
-
-  const excuteAfterDelete = (globalStateNewest) => {
-    if (globalStateNewest.bill.isSuccess) {
-      const variant = 'success';
-      enqueueSnackbar('Delete success', { variant });
-      dispatch(getBillList(excuteAfterGetList));
-    } else {
       const variant = 'error';
       // variant could be success, error, warning, info, or default
       enqueueSnackbar(globalStateNewest.bill.errorMessage, { variant });

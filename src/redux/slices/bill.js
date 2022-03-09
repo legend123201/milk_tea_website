@@ -33,6 +33,19 @@ const slice = createSlice({
       state.isLoading = false;
       state.isSuccess = true;
       state.listData = action.payload;
+    },
+
+    // GET BILLS BY USER_ID
+    getBillListByUserIdSuccess(state, action) {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.listData = action.payload;
+    },
+
+    // ADD BILL
+    addBillSuccess(state, action) {
+      state.isLoading = false;
+      state.isSuccess = true;
     }
   }
 });
@@ -50,6 +63,38 @@ export function getBillList(myCallBack) {
     try {
       const response = await axios.get('/bills');
       dispatch(slice.actions.getBillListSuccess(response.data.data));
+    } catch (e) {
+      console.log(e);
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
+      dispatch(slice.actions.hasError(messageError));
+    } finally {
+      if (myCallBack) myCallBack(getState());
+    }
+  };
+}
+
+export function getBillListByUserId(userId, myCallBack) {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await axios.get(`/bills/salepage/userId/${userId}`);
+      dispatch(slice.actions.getBillListByUserIdSuccess(response.data.data));
+    } catch (e) {
+      console.log(e);
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
+      dispatch(slice.actions.hasError(messageError));
+    } finally {
+      if (myCallBack) myCallBack(getState());
+    }
+  };
+}
+
+export function addBill(userId, myCallBack) {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await axios.get(`/bills/userId/${userId}`);
+      dispatch(slice.actions.addBillSuccess());
     } catch (e) {
       console.log(e);
       const messageError = e.message ? e.message : defaultErrorString + e.toString();

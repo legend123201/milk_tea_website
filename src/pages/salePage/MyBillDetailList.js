@@ -6,8 +6,13 @@ import { Link as RouterLink } from 'react-router-dom';
 import { useFormik, Form, FormikProvider } from 'formik';
 import arrowIosBackFill from '@iconify/icons-eva/arrow-ios-back-fill';
 // material
-import { Grid, Card, Button, CardHeader, Typography } from '@mui/material';
+import { Grid, Card, Button, CardHeader, Typography, Container } from '@mui/material';
 import MyCustomAlertDialog from '../../components/MyCustomAlertDialog';
+// components
+import Page from '../../components/Page';
+import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
+// hooks
+import useSettings from '../../hooks/useSettings';
 // slices
 import { getCartList } from '../../redux/slices/cart';
 // redux
@@ -24,6 +29,7 @@ import { CheckoutSummary, CheckoutProductList } from '../../components/_salepage
 export default function CheckoutCart() {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
+  const { themeStretch } = useSettings();
   // useSelector
   const { listData } = useSelector((state) => state.cart);
   // useState
@@ -58,60 +64,59 @@ export default function CheckoutCart() {
   const totalItems = listData.length;
 
   return (
-    <>
-      <MyCustomAlertDialog
-        title="Verifying"
-        contentText="Are you sure you want to checkout?"
-        open={openDialog}
-        handleCloseDialog={handleCloseDialog}
-        handleAgree={() => {}}
-      />
+    <Page title="My Bill: List | Minimal-UI">
+      <Container maxWidth={themeStretch ? false : 'lg'}>
+        <HeaderBreadcrumbs
+          heading="Bill List"
+          links={[{ name: 'Shop', href: PATH_SALEPAGE.root }, { name: 'Bill List' }]}
+        />
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
-          <Card sx={{ mb: 3 }}>
-            <CardHeader
-              title={
-                <Typography variant="h6">
-                  Card
-                  <Typography component="span" sx={{ color: 'text.secondary' }}>
-                    &nbsp;({totalItems} item)
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={8}>
+            <Card sx={{ mb: 3 }}>
+              <CardHeader
+                title={
+                  <Typography variant="h6">
+                    Card
+                    <Typography component="span" sx={{ color: 'text.secondary' }}>
+                      &nbsp;({totalItems} item)
+                    </Typography>
                   </Typography>
-                </Typography>
-              }
-              sx={{ mb: 3 }}
-            />
-
-            {!isEmptyCart ? (
-              <Scrollbar>
-                <CheckoutProductList listCart={listData} />
-              </Scrollbar>
-            ) : (
-              <EmptyContent
-                title="Cart is empty"
-                description="Look like you have no items in your shopping cart."
-                img="/static/illustrations/illustration_empty_cart.svg"
+                }
+                sx={{ mb: 3 }}
               />
-            )}
-          </Card>
 
-          <Button
-            color="inherit"
-            component={RouterLink}
-            to={PATH_SALEPAGE.shop}
-            startIcon={<Icon icon={arrowIosBackFill} />}
-          >
-            Continue Shopping
-          </Button>
-        </Grid>
+              {!isEmptyCart ? (
+                <Scrollbar>
+                  <CheckoutProductList listCart={listData} />
+                </Scrollbar>
+              ) : (
+                <EmptyContent
+                  title="Cart is empty"
+                  description="Look like you have no items in your shopping cart."
+                  img="/static/illustrations/illustration_empty_cart.svg"
+                />
+              )}
+            </Card>
 
-        <Grid item xs={12} md={4}>
-          <CheckoutSummary total={total} />
-          <Button fullWidth size="large" variant="contained" onClick={() => setOpenDialog(true)}>
-            Check Out
-          </Button>
+            <Button
+              color="inherit"
+              component={RouterLink}
+              to={PATH_SALEPAGE.shop}
+              startIcon={<Icon icon={arrowIosBackFill} />}
+            >
+              Continue Shopping
+            </Button>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <CheckoutSummary total={total} />
+            <Button fullWidth size="large" variant="contained" onClick={() => setOpenDialog(true)}>
+              Check Out
+            </Button>
+          </Grid>
         </Grid>
-      </Grid>
-    </>
+      </Container>
+    </Page>
   );
 }

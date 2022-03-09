@@ -114,7 +114,8 @@ export const PATH_SALEPAGE = {
   shop: path(ROOTS_SALEPAGE, '/shop'),
   product: path(ROOTS_SALEPAGE, '/product/:id'),
   checkout: path(ROOTS_SALEPAGE, '/checkout'),
-  myBill: path(ROOTS_SALEPAGE, '/my-bills')
+  myBills: path(ROOTS_SALEPAGE, '/my-bills'),
+  myBillDetailList: path(ROOTS_SALEPAGE, '/my-bill-detail-list/billId/:id')
 };
 
 export const PATH_DOCS = 'https://docs-minimals.vercel.app/introduction';
