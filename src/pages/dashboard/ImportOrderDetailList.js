@@ -26,7 +26,9 @@ import {
 } from '@mui/material';
 
 import { useSnackbar } from 'notistack';
+// utils
 import { fDateTime } from '../../utils/formatTime';
+import { fCurrency } from '../../utils/formatNumber';
 
 // redux
 import { useDispatch, useSelector } from '../../redux/store';
@@ -49,6 +51,7 @@ import {
   MyCustomListToolbar
 } from '../../components/_dashboard/my-custom-list/list';
 import ImportOrderDetailNewFormDialog from '../../components/_dashboard/importOrderDetail/ImportOrderDetailNewFormDialog';
+import MyCustomAlertDialog from '../../components/MyCustomAlertDialog';
 
 // ----------------------------------------------------------------------
 
@@ -72,28 +75,35 @@ function descendingComparator(a, b, orderBy) {
   return 0;
 }
 
+// hàm này trả về cho mình "1 cái hàm"
 function getComparator(order, orderBy) {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// hàm sort của ô input search duy nhất ở trang list, ở đây mình sort theo product_id của importOrderDetail
+// hàm orderBy và filter (theo name của product) của table
 function applySortFilter(array, comparator, query) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
+  // nếu có filter thì ưu tiên filter
+  if (query) {
+    // filter bằng hàm filter có sẵn có lodash, lodash mặc định xếp chữ tăng dần theo alphabet, indexOf mà khác -1 nghĩa là có tìm thấy
+    return filter(
+      array,
+      (_importOrderDetail) => _importOrderDetail.name.toString().toLowerCase().indexOf(query.toLowerCase()) !== -1
+    );
+  }
+
+  // không có filter mới order by
+  const stabilizedThis = array.map((arrayElement, index) => [arrayElement, index]);
+
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
+    // kiểm tra nếu 2 phần tử có "giá trị mà lấy để so sánh" (orderBy) bằng nhau thì mình sắp theo index của chúng
     if (order !== 0) return order;
     return a[1] - b[1];
   });
-  if (query) {
-    return filter(
-      array,
-      (_importOrderDetail) =>
-        _importOrderDetail.product_id.toString().toLowerCase().indexOf(query.toString().toLowerCase()) !== -1
-    );
-  }
-  return stabilizedThis.map((el) => el[0]);
+
+  return stabilizedThis.map((stabilizedElement) => stabilizedElement[0]);
 }
 
 export default function ImportOrderDetailList() {
@@ -116,45 +126,57 @@ export default function ImportOrderDetailList() {
   const { staffOfOrderId } = useParams();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const [openDialog, setOpenDialog] = useState(false); // điều khiển tắt mở dialog
+  const [openDialogAddProduct, setOpenDialogAddProduct] = useState(false); // điều khiển tắt mở dialog
+  const [openDialogCreateImportOrder, setOpenDialogCreateImportOrder] = useState(false);
 
   // mở dialog
-  const handleClickOpenDialog = () => {
-    setOpenDialog(true);
+  const handleClickOpenDialogAddProduct = () => {
+    setOpenDialogAddProduct(true);
+  };
+
+  const handleClickOpenDialogCreateImportOrder = () => {
+    setOpenDialogCreateImportOrder(true);
   };
 
   // đóng dialog
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
+  const handleCloseDialogAddProduct = () => {
+    setOpenDialogAddProduct(false);
+  };
+
+  const handleCloseDialogCreateImportOrder = () => {
+    setOpenDialogCreateImportOrder(false);
   };
 
   // hàm này chỉ chạy khi đang xem detail
   const excuteAfterGetList = (globalStateNewest) => {
-    if (!globalStateNewest.importOrderDetail.isSuccess) {
+    const stateImportOrderDetail = globalStateNewest.importOrderDetail;
+    if (!stateImportOrderDetail.isSuccess) {
       const variant = 'error';
       // variant could be success, error, warning, info, or default
-      enqueueSnackbar(globalStateNewest.importOrderDetail.errorMessage, { variant });
+      enqueueSnackbar(stateImportOrderDetail.errorMessage, { variant });
     } else {
-      setListData(globalStateNewest.importOrderDetail.listData);
+      setListData(stateImportOrderDetail.listData);
     }
   };
 
   // hàm này chỉ chạy khi đang xem detail
   const excuteAfterGetStaffOfOrder = (globalStateNewest) => {
-    if (!globalStateNewest.importOrderDetail.isSuccess) {
+    const stateStaff = globalStateNewest.staff;
+    if (!stateStaff.isSuccess) {
       const variant = 'error';
       // variant could be success, error, warning, info, or default
-      enqueueSnackbar(globalStateNewest.importOrderDetail.errorMessage, { variant });
+      enqueueSnackbar(stateStaff.errorMessage, { variant });
     } else {
-      setStaffOfOrder(globalStateNewest.staff.staffOfOrder);
+      setStaffOfOrder(stateStaff.staffOfOrder);
     }
   };
 
   const excuteAfterAddImportOrder = (globalStateNewest) => {
-    if (!globalStateNewest.importOrder.isSuccess) {
+    const stateImportOrder = globalStateNewest.importOrder;
+    if (!stateImportOrder.isSuccess) {
       const variant = 'error';
       // variant could be success, error, warning, info, or default
-      enqueueSnackbar(globalStateNewest.importOrderDetail.errorMessage, { variant });
+      enqueueSnackbar(stateImportOrder.errorMessage, { variant });
     } else {
       const variant = 'success';
       // variant could be success, error, warning, info, or default
@@ -194,39 +216,6 @@ export default function ImportOrderDetailList() {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
-  };
-
-  // cái này là event cho ô checkbox tổng
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = listData.map((n) => n.product_id); // lấy tất cả phần tử
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  // hàm set cái mảng những phần tử đang đc chọn
-  const handleClick = (event, product_id) => {
-    // xài indexOf cho mảng string hoặc number cực kì tối ưu
-    const selectedIndex = selected.indexOf(product_id); // vị trí của phần tử vừa click
-    let newSelected = [];
-
-    // nếu index là -1 nghĩa là ko kiếm thấy, vậy đơn giản mình thêm product_id vào mảng chứa những product_id đang đc chọn
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, product_id);
-    } else if (selectedIndex === 0) {
-      /* 
-      từ else if này đổ xuống nghĩa là mình có kiếm thấy, vậy đang có mà click chọn thì sẽ bỏ chọn, vậy những dòng lệnh 
-      phía dưới là để loại 1 phần tử ra khỏi mảng, rất hay để học hỏi
-      */
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-    }
-    setSelected(newSelected);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -293,7 +282,11 @@ export default function ImportOrderDetailList() {
           ]}
           action={
             !isDetail && (
-              <Button variant="contained" onClick={handleClickOpenDialog} startIcon={<Icon icon={plusFill} />}>
+              <Button
+                variant="contained"
+                onClick={handleClickOpenDialogAddProduct}
+                startIcon={<Icon icon={plusFill} />}
+              >
                 New Import Order Detail
               </Button>
             )
@@ -312,11 +305,16 @@ export default function ImportOrderDetailList() {
                 Name: {staffOfOrder ? staffOfOrder.name : ''}
               </Typography>
               <Typography variant="body1" noWrap sx={{ mt: 2 }}>
-                Total: {totalOfOrder}
+                Total: {fCurrency(totalOfOrder)}
               </Typography>
               <Stack direction="row" justifyContent="center" sx={{ mt: 3 }}>
                 {!isDetail && (
-                  <Button variant="contained" size="large" color="info" onClick={handleSubmitOrder}>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    color="info"
+                    onClick={handleClickOpenDialogCreateImportOrder}
+                  >
                     Submit Order
                   </Button>
                 )}
@@ -326,9 +324,9 @@ export default function ImportOrderDetailList() {
           <Grid item xs={12} md={9}>
             <Card>
               <MyCustomListToolbar
-                numSelected={selected.length}
                 filterProp={filterValue}
                 onFilterProp={handleFilterByValue}
+                searchPlaceholder="Search by product name"
               />
 
               <Scrollbar>
@@ -339,33 +337,16 @@ export default function ImportOrderDetailList() {
                       orderBy={orderBy}
                       headLabel={TABLE_HEAD}
                       rowCount={listData.length}
-                      numSelected={selected.length}
                       onRequestSort={handleRequestSort}
-                      onSelectAllClick={handleSelectAllClick}
                     />
                     <TableBody>
                       {filteredImportOrderDetails
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((row) => {
                           const { product_id, name, quantity, current_unit_perchase_price } = row;
-                          const isItemSelected = selected.indexOf(product_id) !== -1;
 
                           return (
-                            <TableRow
-                              hover
-                              key={product_id}
-                              tabIndex={-1}
-                              role="checkbox"
-                              selected={isItemSelected}
-                              aria-checked={isItemSelected}
-                            >
-                              <TableCell padding="checkbox">
-                                <Checkbox
-                                  checked={isItemSelected}
-                                  onChange={(event) => handleClick(event, product_id)}
-                                />
-                              </TableCell>
-
+                            <TableRow hover key={product_id} tabIndex={-1} role="checkbox">
                               <TableCell align="left">{product_id}</TableCell>
                               <TableCell align="left">{name}</TableCell>
                               <TableCell align="left">{quantity}</TableCell>
@@ -409,10 +390,17 @@ export default function ImportOrderDetailList() {
         </Grid>
       </Container>
       <ImportOrderDetailNewFormDialog
-        open={openDialog}
-        handleCloseDialog={handleCloseDialog}
+        open={openDialogAddProduct}
+        handleCloseDialog={handleCloseDialogAddProduct}
         isDuplicateProduct={isDuplicateProduct}
         handleAgree={handleAddDetail}
+      />
+      <MyCustomAlertDialog
+        title="Verifying"
+        contentText="Are you sure you want to create import order?"
+        open={openDialogCreateImportOrder}
+        handleCloseDialog={handleCloseDialogCreateImportOrder}
+        handleAgree={handleSubmitOrder}
       />
     </Page>
   );

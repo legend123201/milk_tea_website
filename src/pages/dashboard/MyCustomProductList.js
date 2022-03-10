@@ -122,22 +122,24 @@ export default function MyCustomProductList() {
   const { enqueueSnackbar } = useSnackbar();
 
   const excuteAfterGetList = (globalStateNewest) => {
-    if (!globalStateNewest.myCustomProduct.isSuccess) {
+    const stateMyCustomProduct = globalStateNewest.myCustomProduct;
+    if (!stateMyCustomProduct.isSuccess) {
       const variant = 'error';
       // variant could be success, error, warning, info, or default
-      enqueueSnackbar(globalStateNewest.myCustomProduct.errorMessage, { variant });
+      enqueueSnackbar(stateMyCustomProduct.errorMessage, { variant });
     }
   };
 
   const excuteAfterDelete = (globalStateNewest) => {
-    if (globalStateNewest.myCustomProduct.isSuccess) {
+    const stateMyCustomProduct = globalStateNewest.myCustomProduct;
+    if (stateMyCustomProduct.isSuccess) {
       const variant = 'success';
       enqueueSnackbar('Delete success', { variant });
       dispatch(getMyCustomProductList(excuteAfterGetList));
     } else {
       const variant = 'error';
       // variant could be success, error, warning, info, or default
-      enqueueSnackbar(globalStateNewest.myCustomProduct.errorMessage, { variant });
+      enqueueSnackbar(stateMyCustomProduct.errorMessage, { variant });
     }
   };
 
@@ -166,7 +168,7 @@ export default function MyCustomProductList() {
     setFilterValue(event.target.value); // value này là của biến target lấy giá trị của input, chứ ko phải prop của object my custom product nhé
   };
 
-  // bấm vào delete trên more menu hàm gọi api xóa
+  // bấm vào delete trên more menu gọi hàm api xóa
   const handleDelete = (id) => {
     dispatch(deleteMyCustomProduct(id, excuteAfterDelete));
   };
@@ -206,7 +208,11 @@ export default function MyCustomProductList() {
         />
 
         <Card>
-          <MyCustomListToolbar filterProp={filterValue} onFilterProp={handleFilterByValue} />
+          <MyCustomListToolbar
+            filterProp={filterValue}
+            onFilterProp={handleFilterByValue}
+            searchPlaceholder="Search by name"
+          />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>

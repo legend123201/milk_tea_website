@@ -33,10 +33,11 @@ const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
 
 MyCustomListToolbar.propTypes = {
   filterProp: PropTypes.string,
-  onFilterProp: PropTypes.func
+  onFilterProp: PropTypes.func,
+  searchPlaceholder: PropTypes.string
 };
 
-export default function MyCustomListToolbar({ filterProp, onFilterProp }) {
+export default function MyCustomListToolbar({ filterProp, onFilterProp, searchPlaceholder }) {
   const theme = useTheme();
   const isLight = theme.palette.mode === 'light';
 
@@ -45,7 +46,7 @@ export default function MyCustomListToolbar({ filterProp, onFilterProp }) {
       <SearchStyle
         value={filterProp}
         onChange={onFilterProp}
-        placeholder="Search by value..."
+        placeholder={searchPlaceholder}
         startAdornment={
           <InputAdornment position="start">
             <Box component={Icon} icon={searchFill} sx={{ color: 'text.disabled' }} />
