@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 // material
 import { styled, useTheme } from '@mui/material/styles';
@@ -10,6 +10,7 @@ import { getMyCustomUser } from '../../redux/slices/myCustomUser';
 import useCollapseDrawer from '../../hooks/useCollapseDrawer';
 //
 import SalePageNavbar from './SalePageNavbar';
+import { PATH_SALEPAGE } from '../../routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -39,28 +40,51 @@ const MainStyle = styled('div')(({ theme }) => ({
 
 export default function SalePageLayout() {
   const dispatch = useDispatch();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
   const enqueueSnackbar = useSnackbar();
   const theme = useTheme();
   const { collapseClick } = useCollapseDrawer();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const excuteAfterGetItem = (globalStateNewest) => {
-      const stateMyCustomUser = globalStateNewest.myCustomUser;
+    const userId = sessionStorage.getItem('userId');
 
-      if (!stateMyCustomUser.isSuccess) {
-        const variant = 'error';
-        // variant could be success, error, warning, info, or default
-        enqueueSnackbar(stateMyCustomUser.errorMessage, { variant });
-      }
-    };
+    if (
+      !userId &&
+      pathname !== PATH_SALEPAGE.root &&
+      pathname !== PATH_SALEPAGE.shop &&
+      !pathname.includes('product') &&
+      pathname !== PATH_SALEPAGE.login &&
+      pathname !== PATH_SALEPAGE.register
+    ) {
+      navigate(PATH_SALEPAGE.login);
+    }
+  }, [pathname]);
 
-    dispatch(getMyCustomUser(1, excuteAfterGetItem));
+  useEffect(() => {
+    const userId = sessionStorage.getItem('userId');
+    if (userId) {
+      const excuteAfterGetItem = (globalStateNewest) => {
+        const stateMyCustomUser = globalStateNewest.myCustomUser;
+
+        if (!stateMyCustomUser.isSuccess) {
+          const variant = 'error';
+          // variant could be success, error, warning, info, or default
+          enqueueSnackbar(stateMyCustomUser.errorMessage, { variant });
+        }
+      };
+
+      dispatch(getMyCustomUser(userId, excuteAfterGetItem));
+    }
   }, [dispatch]);
 
   return (
     <RootStyle>
-      <SalePageNavbar onOpenSidebar={() => setOpen(true)} />
+      {pathname !== PATH_SALEPAGE.login && pathname !== PATH_SALEPAGE.register && (
+        <SalePageNavbar onOpenSidebar={() => setOpen(true)} />
+      )}
+
       <MainStyle
         sx={{
           transition: theme.transitions.create('margin', {

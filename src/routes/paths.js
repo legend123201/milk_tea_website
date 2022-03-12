@@ -111,6 +111,9 @@ export const PATH_DASHBOARD = {
 
 export const PATH_SALEPAGE = {
   root: ROOTS_SALEPAGE,
+  login: path(ROOTS_SALEPAGE, '/login'),
+  register: path(ROOTS_SALEPAGE, '/register'),
+  profile: path(ROOTS_SALEPAGE, '/profile'),
   shop: path(ROOTS_SALEPAGE, '/shop'),
   product: path(ROOTS_SALEPAGE, '/product/:id'),
   checkout: path(ROOTS_SALEPAGE, '/checkout'),

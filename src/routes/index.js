@@ -188,6 +188,9 @@ export default function Router() {
       element: <SalePageLayout />,
       children: [
         { element: <Navigate to="/sale-page/shop" replace /> },
+        { path: 'login', element: <LoginSalePage /> },
+        { path: 'register', element: <RegisterSalePage /> },
+        { path: 'profile', element: <ProfileSalePage /> },
         { path: 'shop', element: <MyCustomEcommerceShop /> },
         { path: 'product/:id', element: <MyCustomEcommerceProductDetails /> },
         { path: 'checkout', element: <MyCustomEcommerceCheckout /> },
@@ -305,6 +308,9 @@ const BillList = Loadable(lazy(() => import('../pages/dashboard/BillList')));
 const ImportOrderList = Loadable(lazy(() => import('../pages/dashboard/ImportOrderList')));
 const ImportOrderDetailList = Loadable(lazy(() => import('../pages/dashboard/ImportOrderDetailList')));
 
+const LoginSalePage = Loadable(lazy(() => import('../pages/salePage/Login')));
+const RegisterSalePage = Loadable(lazy(() => import('../pages/salePage/Register')));
+const ProfileSalePage = Loadable(lazy(() => import('../pages/salePage/Profile')));
 const MyCustomEcommerceShop = Loadable(lazy(() => import('../pages/salePage/MyCustomEcommerceShop')));
 const MyCustomEcommerceProductDetails = Loadable(
   lazy(() => import('../pages/salePage/MyCustomEcommerceProductDetails'))

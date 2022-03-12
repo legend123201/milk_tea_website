@@ -108,6 +108,7 @@ export default function ProductDetailsSumary({ product }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
+  const user = useSelector((state) => state.myCustomUser.data);
 
   const { id, name, quantity_in_stock, unit_perchase_price, unit_sale_price, measure_unit, image } = product;
 
@@ -120,7 +121,7 @@ export default function ProductDetailsSumary({ product }) {
       }
     };
 
-    dispatch(getCartList(1, excuteAfterGetList));
+    dispatch(getCartList(user.id, excuteAfterGetList));
   };
 
   const formik = useFormik({
@@ -142,13 +143,20 @@ export default function ProductDetailsSumary({ product }) {
           }
         };
 
-        const newCart = {
-          user_id: 1,
-          product_id: id,
-          quantity: values.quantity
-        };
+        if (user) {
+          const newCart = {
+            user_id: user.id,
+            product_id: id,
+            quantity: values.quantity
+          };
 
-        dispatch(addCart(newCart, excuteAfterAddCart));
+          dispatch(addCart(newCart, excuteAfterAddCart));
+        } else {
+          const variant = 'error';
+          // variant could be success, error, warning, info, or default
+          enqueueSnackbar('You need to login to add to cart!', { variant });
+        }
+
         setSubmitting(false);
       } catch (error) {
         setSubmitting(false);

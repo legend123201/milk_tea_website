@@ -18,6 +18,8 @@ import useIsMountedRef from '../../hooks/useIsMountedRef';
 import { MIconButton } from '../../components/@material-extend';
 import MyCustomMyAvatar from '../../components/MyCustomMyAvatar';
 import MenuPopover from '../../components/MenuPopover';
+import { useDispatch } from '../../redux/store';
+import { logout } from '../../redux/slices/myCustomUser';
 
 // ----------------------------------------------------------------------
 
@@ -30,7 +32,7 @@ const MENU_OPTIONS = [
   {
     label: 'Profile',
     icon: personFill,
-    linkTo: '#'
+    linkTo: PATH_SALEPAGE.profile
   },
   {
     label: 'My pending bill',
@@ -44,9 +46,9 @@ const MENU_OPTIONS = [
 export default function AccountPopover() {
   const anchorRef = useRef(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const isMountedRef = useIsMountedRef();
-  const { logout } = useAuth();
   const [open, setOpen] = useState(false);
   const user = useSelector((state) => state.myCustomUser.data);
 
@@ -59,7 +61,8 @@ export default function AccountPopover() {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      sessionStorage.removeItem('userId');
+      dispatch(logout());
       navigate('/');
       if (isMountedRef.current) {
         handleClose();
@@ -130,9 +133,15 @@ export default function AccountPopover() {
         ))}
 
         <Box sx={{ p: 2, pt: 1.5 }}>
-          <Button fullWidth color="inherit" variant="outlined" onClick={handleLogout}>
-            Logout
-          </Button>
+          {user ? (
+            <Button fullWidth color="inherit" variant="outlined" onClick={handleLogout}>
+              Logout
+            </Button>
+          ) : (
+            <Button fullWidth color="inherit" variant="outlined" onClick={() => navigate(PATH_SALEPAGE.login)}>
+              Login
+            </Button>
+          )}
         </Box>
       </MenuPopover>
     </>
