@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { Icon } from '@iconify/react';
 import { useState } from 'react';
 import chevronUpFill from '@iconify/icons-eva/chevron-up-fill';
@@ -11,18 +12,14 @@ import { sortByProducts } from '../../../../redux/slices/product';
 // ----------------------------------------------------------------------
 
 const SORT_BY_OPTIONS = [
-  { value: 'featured', label: 'Featured' },
-  { value: 'newest', label: 'Newest' },
+  { value: 'all', label: 'All item' },
   { value: 'priceDesc', label: 'Price: High-Low' },
   { value: 'priceAsc', label: 'Price: Low-High' }
 ];
 
 function renderLabel(label) {
-  if (label === 'featured') {
-    return 'Featured';
-  }
-  if (label === 'newest') {
-    return 'Newest';
+  if (label === 'all') {
+    return 'All item';
   }
   if (label === 'priceDesc') {
     return 'Price: High-Low';
@@ -30,10 +27,14 @@ function renderLabel(label) {
   return 'Price: Low-High';
 }
 
-export default function ShopProductSort() {
-  const dispatch = useDispatch();
+ShopProductSort.propTypes = {
+  products: PropTypes.array,
+  setListDataFiltered: PropTypes.any
+};
+
+export default function ShopProductSort({ products, setListDataFiltered }) {
   const [open, setOpen] = useState(null);
-  const { sortBy } = useSelector((state) => state.product);
+  const [sortBy, setSortBy] = useState(null);
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -45,7 +46,35 @@ export default function ShopProductSort() {
 
   const handleSortBy = (value) => {
     handleClose();
-    dispatch(sortByProducts(value));
+    setSortBy(value);
+    console.log(value);
+    if (value === 'all') {
+      setListDataFiltered(products);
+    } else if (value === 'priceDesc') {
+      setListDataFiltered(
+        [...products].sort((a, b) => {
+          if (a.unit_sale_price > b.unit_sale_price) {
+            return -1;
+          }
+          if (a.unit_sale_price < b.unit_sale_price) {
+            return 1;
+          }
+          return 0;
+        })
+      );
+    } else {
+      setListDataFiltered(
+        [...products].sort((a, b) => {
+          if (a.unit_sale_price < b.unit_sale_price) {
+            return -1;
+          }
+          if (a.unit_sale_price > b.unit_sale_price) {
+            return 1;
+          }
+          return 0;
+        })
+      );
+    }
   };
 
   return (

@@ -25,7 +25,8 @@ import {
 } from '@mui/material';
 
 import { useSnackbar } from 'notistack';
-
+// utils
+import { fNumber } from '../../utils/formatNumber';
 // redux
 import { useDispatch, useSelector } from '../../redux/store';
 import { getMyCustomProductList, deleteMyCustomProduct } from '../../redux/slices/myCustomProduct';
@@ -50,10 +51,10 @@ import {
 const TABLE_HEAD = [
   { id: 'id', label: 'ID', alignRight: false },
   { id: 'name', label: 'Name', alignRight: false },
-  { id: 'quantity_in_stock', label: 'Quantity in stock', alignRight: false },
-  { id: 'unit_perchase_price', label: 'Unit perchase price', alignRight: false },
-  { id: 'unit_sale_price', label: 'Unit sale price', alignRight: false },
-  { id: 'measure_unit', label: 'Measure unit', alignRight: false },
+  { id: 'quantity_in_stock', label: 'Quantity in stock', alignRight: true },
+  { id: 'unit_perchase_price', label: 'Unit perchase price (vnd)', alignRight: true },
+  { id: 'unit_sale_price', label: 'Unit sale price (vnd)', alignRight: true },
+  { id: 'measure_unit', label: 'Measure unit', alignRight: true },
   { id: '' }
 ];
 
@@ -246,10 +247,10 @@ export default function MyCustomProductList() {
                             </Typography>
                           </Box>
                         </TableCell>
-                        <TableCell align="left">{quantity_in_stock}</TableCell>
-                        <TableCell align="left">{unit_perchase_price}</TableCell>
-                        <TableCell align="left">{unit_sale_price}</TableCell>
-                        <TableCell align="left">{measure_unit}</TableCell>
+                        <TableCell align="right">{fNumber(quantity_in_stock)}</TableCell>
+                        <TableCell align="right">{fNumber(unit_perchase_price)}</TableCell>
+                        <TableCell align="right">{fNumber(unit_sale_price)}</TableCell>
+                        <TableCell align="right">{measure_unit}</TableCell>
 
                         <TableCell align="right">
                           <MyCustomListMoreMenu onDelete={() => handleDelete(id)} onEdit={() => handleEdit(id)} />

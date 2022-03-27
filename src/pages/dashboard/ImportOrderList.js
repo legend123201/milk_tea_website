@@ -147,11 +147,6 @@ export default function ImportOrderList() {
     setFilterValue(event.target.value); // value này là của biến target lấy giá trị của input, chứ ko phải prop của object import order nhé
   };
 
-  // bấm vào delete trên more menu gọi hàm api xóa
-  const handleDelete = (id) => {
-    // dispatch(deleteMyCustomUser(id, excuteAfterDelete));
-  };
-
   // bấm vào detail trên more menu
   const handleDetail = (id, staffOfOrderId) => {
     navigate(`${PATH_DASHBOARD.importOrder.root}/${id}/${staffOfOrderId}/detail`);

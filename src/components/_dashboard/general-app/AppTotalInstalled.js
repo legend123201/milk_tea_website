@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux';
 import { Icon } from '@iconify/react';
 import ReactApexChart from 'react-apexcharts';
 import trendingUpFill from '@iconify/icons-eva/trending-up-fill';
@@ -29,6 +30,7 @@ const CHART_DATA = [{ data: [5, 18, 12, 51, 68, 11, 39, 37, 27, 20] }];
 
 export default function AppTotalInstalled() {
   const theme = useTheme();
+  const totalBill = useSelector((state) => state.analytic.totalBill);
 
   const chartOptions = {
     colors: [theme.palette.chart.blue[0]],
@@ -50,9 +52,9 @@ export default function AppTotalInstalled() {
   return (
     <Card sx={{ display: 'flex', alignItems: 'center', p: 3 }}>
       <Box sx={{ flexGrow: 1 }}>
-        <Typography variant="subtitle2">Total Installed</Typography>
+        <Typography variant="subtitle2">Total Bill</Typography>
 
-        <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 2, mb: 1 }}>
+        {/* <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 2, mb: 1 }}>
           <IconWrapperStyle
             sx={{
               ...(PERCENT < 0 && {
@@ -67,9 +69,9 @@ export default function AppTotalInstalled() {
             {PERCENT > 0 && '+'}
             {fPercent(PERCENT)}
           </Typography>
-        </Stack>
+        </Stack> */}
 
-        <Typography variant="h3">{fNumber(TOTAL_INSTALLED)}</Typography>
+        <Typography variant="h3">{fNumber(totalBill)}</Typography>
       </Box>
 
       <ReactApexChart type="bar" series={CHART_DATA} options={chartOptions} width={60} height={36} />

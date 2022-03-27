@@ -18,6 +18,7 @@ import importOrderDetailReducer from './slices/importOrderDetail';
 import billReducer from './slices/bill';
 import billDetailReducer from './slices/billDetail';
 import cartReducer from './slices/cart';
+import analyticReducer from './slices/analytic';
 
 // ----------------------------------------------------------------------
 
@@ -52,7 +53,8 @@ const rootReducer = combineReducers({
   importOrderDetail: importOrderDetailReducer,
   bill: billReducer,
   billDetail: billDetailReducer,
-  cart: cartReducer
+  cart: cartReducer,
+  analytic: analyticReducer
 });
 
 export { rootPersistConfig, rootReducer };

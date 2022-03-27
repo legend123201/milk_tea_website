@@ -57,15 +57,19 @@ export default function EcommerceProductDetails() {
   const { id } = useParams();
   const [value, setValue] = useState('1');
   const product = useSelector((state) => state.myCustomProduct.data);
+  const currentUser = useSelector((state) => state.myCustomUser.data);
+  const listCart = useSelector((state) => state.cart.listData);
   const { enqueueSnackbar } = useSnackbar();
+  const [isEditCart, setIsEditCart] = useState(false);
 
   useEffect(() => {
     if (id) {
       const excuteAfterGetItem = (globalStateNewest) => {
-        if (!globalStateNewest.myCustomProduct.isSuccess) {
+        const stateMyCustomProduct = globalStateNewest.myCustomProduct;
+        if (!stateMyCustomProduct.isSuccess) {
           const variant = 'error';
           // variant could be success, error, warning, info, or default
-          enqueueSnackbar(globalStateNewest.myCustomProduct.errorMessage, { variant });
+          enqueueSnackbar(stateMyCustomProduct.errorMessage, { variant });
         }
       };
 
@@ -74,16 +78,28 @@ export default function EcommerceProductDetails() {
   }, [dispatch]);
 
   useEffect(() => {
-    const excuteAfterGetList = (globalStateNewest) => {
-      if (!globalStateNewest.cart.isSuccess) {
-        const variant = 'error';
-        // variant could be success, error, warning, info, or default
-        enqueueSnackbar(globalStateNewest.cart.errorMessage, { variant });
-      }
-    };
+    if (currentUser) {
+      const excuteAfterGetList = (globalStateNewest) => {
+        const stateCart = globalStateNewest.cart;
+        if (!stateCart.isSuccess) {
+          const variant = 'error';
+          // variant could be success, error, warning, info, or default
+          enqueueSnackbar(stateCart.errorMessage, { variant });
+        }
+      };
 
-    dispatch(getCartList(1, excuteAfterGetList));
+      dispatch(getCartList(currentUser.id, excuteAfterGetList));
+    }
   }, [dispatch]);
+
+  useEffect(() => {
+    if (listCart.length > 0) {
+      const currentProductIsAdded = listCart.find((item) => item.product_id === Number(id));
+      if (currentProductIsAdded) {
+        setIsEditCart(true);
+      }
+    }
+  }, [listCart]);
 
   return (
     <Page title="Ecommerce: Product Details | Minimal-UI">
@@ -110,7 +126,7 @@ export default function EcommerceProductDetails() {
                 </Grid>
                 <Grid item xs={12} md={6} lg={5} sx={{ border: '1px dashed grey', borderRadius: '16px' }}>
                   <Box>
-                    <ProductDetailsSumary product={product} />
+                    <ProductDetailsSumary product={product} isEditCart={isEditCart} />
                   </Box>
                 </Grid>
               </Grid>

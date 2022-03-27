@@ -305,6 +305,7 @@ const MyCustomProductList = Loadable(lazy(() => import('../pages/dashboard/MyCus
 const MyCustomProductCreate = Loadable(lazy(() => import('../pages/dashboard/MyCustomProductCreate')));
 const MyCustomUserList = Loadable(lazy(() => import('../pages/dashboard/MyCustomUserList')));
 const BillList = Loadable(lazy(() => import('../pages/dashboard/BillList')));
+const BillDetailList = Loadable(lazy(() => import('../pages/dashboard/BillDetailList')));
 const ImportOrderList = Loadable(lazy(() => import('../pages/dashboard/ImportOrderList')));
 const ImportOrderDetailList = Loadable(lazy(() => import('../pages/dashboard/ImportOrderDetailList')));
 
@@ -320,7 +321,6 @@ const MyBills = Loadable(lazy(() => import('../pages/salePage/MyBills')));
 const MyBillDetailList = Loadable(lazy(() => import('../pages/salePage/MyBillDetailList')));
 
 // ===================================================
-const BillDetailList = Loadable(lazy(() => import('../pages/dashboard/BillDetailList')));
 const EcommerceShop = Loadable(lazy(() => import('../pages/dashboard/EcommerceShop')));
 const EcommerceProductDetails = Loadable(lazy(() => import('../pages/dashboard/EcommerceProductDetails')));
 const EcommerceProductList = Loadable(lazy(() => import('../pages/dashboard/EcommerceProductList')));

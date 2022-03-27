@@ -36,16 +36,18 @@ export default function CheckoutCart() {
   const isEmptyCart = listData.length === 0;
 
   useEffect(() => {
-    const excuteAfterGetList = (globalStateNewest) => {
-      const stateCart = globalStateNewest.cart;
-      if (!stateCart.isSuccess) {
-        const variant = 'error';
-        // variant could be success, error, warning, info, or default
-        enqueueSnackbar(stateCart.errorMessage, { variant });
-      }
-    };
+    if (currentUser) {
+      const excuteAfterGetList = (globalStateNewest) => {
+        const stateCart = globalStateNewest.cart;
+        if (!stateCart.isSuccess) {
+          const variant = 'error';
+          // variant could be success, error, warning, info, or default
+          enqueueSnackbar(stateCart.errorMessage, { variant });
+        }
+      };
 
-    dispatch(getCartList(1, excuteAfterGetList));
+      dispatch(getCartList(currentUser.id, excuteAfterGetList));
+    }
   }, [dispatch]);
 
   useEffect(() => {
@@ -60,6 +62,13 @@ export default function CheckoutCart() {
   };
 
   const handleAgreeCheckout = () => {
+    if (!currentUser) {
+      const variant = 'error';
+      // variant could be success, error, warning, info, or default
+      enqueueSnackbar('Please login!', { variant });
+      return;
+    }
+
     if (totalItems <= 0) {
       const variant = 'error';
       // variant could be success, error, warning, info, or default

@@ -122,7 +122,9 @@ export default function MyBills() {
   };
 
   useEffect(() => {
-    dispatch(getBillListByUserId(currentUser.id, excuteAfterGetList));
+    if (currentUser) {
+      dispatch(getBillListByUserId(currentUser.id, excuteAfterGetList));
+    }
   }, [dispatch]);
 
   // sort theo prop được đưa vào hàm

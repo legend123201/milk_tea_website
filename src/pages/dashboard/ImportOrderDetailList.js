@@ -28,7 +28,7 @@ import {
 import { useSnackbar } from 'notistack';
 // utils
 import { fDateTime } from '../../utils/formatTime';
-import { fCurrency } from '../../utils/formatNumber';
+import { fCurrency, fNumber } from '../../utils/formatNumber';
 
 // redux
 import { useDispatch, useSelector } from '../../redux/store';
@@ -59,7 +59,7 @@ const TABLE_HEAD = [
   { id: 'product_id', label: 'Product ID', alignRight: false },
   { id: 'name', label: 'Name', alignRight: false },
   { id: 'quantity', label: 'Quantity', alignRight: false },
-  { id: 'current_unit_perchase_price', label: 'Current unit perchase price', alignRight: false },
+  { id: 'current_unit_perchase_price', label: 'Current unit perchase price (vnd)', alignRight: false },
   { id: '' }
 ];
 
@@ -111,7 +111,7 @@ export default function ImportOrderDetailList() {
   const theme = useTheme();
   const dispatch = useDispatch();
   const currentStaff = useSelector((state) => state.staff.currentStaff); // staff đang sử dụng chương trình
-  const [staffOfOrder, setStaffOfOrder] = useState(null); // staff của đơn hàng hiện tại
+  const [orderMaker, setOrderMaker] = useState(null); // staff của đơn hàng hiện tại
   const [listData, setListData] = useState([]); // khởi tạo mảng chứa các chi tiết là rỗng
   const [page, setPage] = useState(0); // biến giữ page hiện tại là page nào
   const [order, setOrder] = useState('asc'); // sắp xếp tăng dần hay giảm dần, mặc định mình để tăng dần
@@ -167,7 +167,7 @@ export default function ImportOrderDetailList() {
       // variant could be success, error, warning, info, or default
       enqueueSnackbar(stateStaff.errorMessage, { variant });
     } else {
-      setStaffOfOrder(stateStaff.staffOfOrder);
+      setOrderMaker(stateStaff.staffOfOrder);
     }
   };
 
@@ -199,9 +199,9 @@ export default function ImportOrderDetailList() {
     if (isDetail) {
       dispatch(getStaff(false, staffOfOrderId, excuteAfterGetStaffOfOrder));
     } else {
-      setStaffOfOrder(currentStaff);
+      setOrderMaker(currentStaff);
     }
-  }, [dispatch]);
+  }, [dispatch, currentStaff]);
 
   useEffect(() => {
     const newTotal = listData.reduce(
@@ -209,7 +209,7 @@ export default function ImportOrderDetailList() {
       0
     );
     setTotalOfOrder(newTotal);
-  }, [listData.length]);
+  }, [listData]);
 
   // sort theo prop được đưa vào hàm
   const handleRequestSort = (event, property) => {
@@ -259,7 +259,7 @@ export default function ImportOrderDetailList() {
       const variant = 'error';
       // variant could be success, error, warning, info, or default
       enqueueSnackbar('Import has no product!', { variant });
-    } else {
+    } else if (currentStaff) {
       dispatch(addImportOrder(currentStaff.id, listData, excuteAfterAddImportOrder));
     }
   };
@@ -299,16 +299,16 @@ export default function ImportOrderDetailList() {
                 Order Detail
               </Typography>
               <Typography variant="body1" noWrap sx={{ mt: 2 }}>
-                Staff ID: {staffOfOrder ? staffOfOrder.id : ''}
+                Staff ID: {orderMaker ? orderMaker.id : ''}
               </Typography>
               <Typography variant="body1" noWrap sx={{ mt: 2 }}>
-                Name: {staffOfOrder ? staffOfOrder.name : ''}
+                Name: {orderMaker ? orderMaker.name : ''}
               </Typography>
               <Typography variant="body1" noWrap sx={{ mt: 2 }}>
-                Total: {fCurrency(totalOfOrder)}
+                Total: {fNumber(totalOfOrder)} vnd
               </Typography>
               <Stack direction="row" justifyContent="center" sx={{ mt: 3 }}>
-                {!isDetail && (
+                {!isDetail && currentStaff && (
                   <Button
                     variant="contained"
                     size="large"
@@ -349,8 +349,8 @@ export default function ImportOrderDetailList() {
                             <TableRow hover key={product_id} tabIndex={-1} role="checkbox">
                               <TableCell align="left">{product_id}</TableCell>
                               <TableCell align="left">{name}</TableCell>
-                              <TableCell align="left">{quantity}</TableCell>
-                              <TableCell align="left">{current_unit_perchase_price}</TableCell>
+                              <TableCell align="left">{fNumber(quantity)}</TableCell>
+                              <TableCell align="left">{fNumber(current_unit_perchase_price)}</TableCell>
                               <TableCell align="right">
                                 {!isDetail && <MyCustomListMoreMenu onDelete={() => handleDelete(product_id)} />}
                               </TableCell>

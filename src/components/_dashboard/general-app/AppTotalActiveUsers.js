@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux';
 import { Icon } from '@iconify/react';
 import ReactApexChart from 'react-apexcharts';
 import trendingUpFill from '@iconify/icons-eva/trending-up-fill';
@@ -29,6 +30,7 @@ const CHART_DATA = [{ data: [20, 41, 63, 33, 28, 35, 50, 46, 11, 26] }];
 
 export default function AppTotalActiveUsers() {
   const theme = useTheme();
+  const totalUser = useSelector((state) => state.analytic.totalUser);
 
   const chartOptions = {
     colors: [theme.palette.primary.main],
@@ -51,7 +53,7 @@ export default function AppTotalActiveUsers() {
     <Card sx={{ display: 'flex', alignItems: 'center', p: 3 }}>
       <Box sx={{ flexGrow: 1 }}>
         <Typography variant="subtitle2">Total Active Users</Typography>
-        <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 2, mb: 1 }}>
+        {/* <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 2, mb: 1 }}>
           <IconWrapperStyle
             sx={{
               ...(PERCENT < 0 && {
@@ -66,9 +68,9 @@ export default function AppTotalActiveUsers() {
             {PERCENT > 0 && '+'}
             {fPercent(PERCENT)}
           </Typography>
-        </Stack>
+        </Stack> */}
 
-        <Typography variant="h3">{fNumber(TOTAL_USER)}</Typography>
+        <Typography variant="h3">{fNumber(totalUser)}</Typography>
       </Box>
 
       <ReactApexChart type="bar" series={CHART_DATA} options={chartOptions} width={60} height={36} />

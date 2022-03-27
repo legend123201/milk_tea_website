@@ -55,11 +55,12 @@ export default function MyCustomProductNewForm({ isEdit, currentMyCustomProduct 
     onSubmit: async (values, { setSubmitting, resetForm, setErrors }) => {
       function excuteAfterSubmit(globalStateNewest) {
         setSubmitting(false);
-        if (globalStateNewest.myCustomProduct.isSuccess) {
+        const stateMyCustomProduct = globalStateNewest.myCustomProduct;
+        if (stateMyCustomProduct.isSuccess) {
           enqueueSnackbar(!isEdit ? 'Create success' : 'Update success', { variant: 'success' });
           navigate(PATH_DASHBOARD.myCustomProduct.list);
         } else {
-          const errorString = globalStateNewest.myCustomProduct.errorMessage;
+          const errorString = stateMyCustomProduct.errorMessage;
           enqueueSnackbar(errorString, { variant: 'error' });
           setErrors(errorString);
         }

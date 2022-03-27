@@ -1,4 +1,3 @@
-import { map, filter } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
 // utils
 import axios from '../../utils/myCustomAxios';
@@ -6,15 +5,16 @@ import axios from '../../utils/myCustomAxios';
 // ----------------------------------------------------------------------
 
 const initialState = {
-  currentStaff: null,
-  staffOfOrder: null,
+  totalUser: 0,
+  totalBill: 0,
+  listRevenueByMonth: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   isLoading: false,
   isSuccess: null,
   errorMessage: ''
 };
 
 const slice = createSlice({
-  name: 'staff',
+  name: 'analytic',
   initialState,
   reducers: {
     // START LOADING
@@ -29,25 +29,25 @@ const slice = createSlice({
       state.errorMessage = action.payload;
     },
 
-    // LOGIN
-    loginSuccess(state, action) {
+    // GET TOTAL USER
+    getTotalUserSuccess(state, action) {
       state.isLoading = false;
       state.isSuccess = true;
-      state.currentStaff = action.payload;
+      state.totalUser = action.payload;
     },
 
-    // GET CURRENT STAFF SUCCESS
-    getCurrentStaffSuccess(state, action) {
+    // GET TOTAL BILL
+    getTotalBillSuccess(state, action) {
       state.isLoading = false;
       state.isSuccess = true;
-      state.currentStaff = action.payload;
+      state.totalBill = action.payload;
     },
 
-    // GET STAFF OF ORDER SUCCESS
-    getStaffOfOrderSuccess(state, action) {
+    // GET LIST REVENUE BY MONTH
+    getListRevenueByMonthSuccess(state, action) {
       state.isLoading = false;
       state.isSuccess = true;
-      state.staffOfOrder = action.payload;
+      state.listRevenueByMonth = action.payload;
     }
   }
 });
@@ -59,15 +59,15 @@ export default slice.reducer;
 
 const defaultErrorString = 'Can not connect to API Server! ';
 
-export function login(loginInfo, myCallBack) {
+export function getTotalUser(myCallBack) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.post('/staffs/login', loginInfo);
-      dispatch(slice.actions.loginSuccess(response.data.data[0]));
+      const response = await axios.get(`/analytics/user`);
+      console.log(response);
+      dispatch(slice.actions.getTotalUserSuccess(response.data.data[0].totalUser));
     } catch (e) {
-      // e sẽ tự động là response của server trả về nếu như server có trả về, còn không nó là lỗi của chương trình
-      // cái điều này là do template giúp mình
+      console.log(e);
       const messageError = e.message ? e.message : defaultErrorString + e.toString();
       dispatch(slice.actions.hasError(messageError));
     } finally {
@@ -76,19 +76,30 @@ export function login(loginInfo, myCallBack) {
   };
 }
 
-export function getStaff(isGetCurrentStaff, staffId, myCallBack) {
+export function getTotalBill(myCallBack) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get(`/staffs/${staffId}`);
-      if (isGetCurrentStaff) {
-        dispatch(slice.actions.getCurrentStaffSuccess(response.data.data[0]));
-      } else {
-        dispatch(slice.actions.getStaffOfOrderSuccess(response.data.data[0]));
-      }
+      const response = await axios.get(`/analytics/bill`);
+      dispatch(slice.actions.getTotalBillSuccess(response.data.data[0].totalBill));
     } catch (e) {
-      // e sẽ tự động là response của server trả về nếu như server có trả về, còn không nó là lỗi của chương trình
-      // cái điều này là do template giúp mình
+      console.log(e);
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
+      dispatch(slice.actions.hasError(messageError));
+    } finally {
+      if (myCallBack) myCallBack(getState());
+    }
+  };
+}
+
+export function getListRevenueByMonth(myCallBack) {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await axios.get(`/analytics/revenue`);
+      dispatch(slice.actions.getListRevenueByMonthSuccess(response.data.data));
+    } catch (e) {
+      console.log(e);
       const messageError = e.message ? e.message : defaultErrorString + e.toString();
       dispatch(slice.actions.hasError(messageError));
     } finally {

@@ -46,6 +46,11 @@ const slice = createSlice({
     addBillSuccess(state, action) {
       state.isLoading = false;
       state.isSuccess = true;
+    },
+
+    approveBillSuccess(state, action) {
+      state.isLoading = false;
+      state.isSuccess = true;
     }
   }
 });
@@ -95,6 +100,22 @@ export function addBill(userId, myCallBack) {
     try {
       const response = await axios.get(`/bills/userId/${userId}`);
       dispatch(slice.actions.addBillSuccess());
+    } catch (e) {
+      console.log(e);
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
+      dispatch(slice.actions.hasError(messageError));
+    } finally {
+      if (myCallBack) myCallBack(getState());
+    }
+  };
+}
+
+export function approveBill(staffId, billId, myCallBack) {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await axios.put(`/bills/staffId/${staffId}/billId/${billId}`);
+      dispatch(slice.actions.approveBillSuccess());
     } catch (e) {
       console.log(e);
       const messageError = e.message ? e.message : defaultErrorString + e.toString();

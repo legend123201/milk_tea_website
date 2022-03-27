@@ -1,4 +1,6 @@
 /* eslint-disable camelcase */
+import { useSelector } from 'react-redux';
+import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import { Icon } from '@iconify/react';
 import plusFill from '@iconify/icons-eva/plus-fill';
@@ -22,6 +24,9 @@ import {
 // router
 import { useNavigate } from 'react-router';
 import { PATH_SALEPAGE } from '../../../../routes/paths';
+// redux
+import { useDispatch } from '../../../../redux/store';
+import { deleteCart, getCartList } from '../../../../redux/slices/cart';
 // utils
 import { fCurrency } from '../../../../utils/formatNumber';
 //
@@ -45,7 +50,39 @@ ProductList.propTypes = {
 
 export default function ProductList({ listCart }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
+  const currentUser = useSelector((state) => state.myCustomUser.data);
 
+  const handleDelateCart = (productId) => {
+    if (currentUser) {
+      const excuteAfterDeleteCart = (globalStateNewest) => {
+        const stateCart1 = globalStateNewest.cart;
+        if (!stateCart1.isSuccess) {
+          const variant = 'error';
+          // variant could be success, error, warning, info, or default
+          enqueueSnackbar(stateCart1.errorMessage, { variant });
+        }
+
+        const variant = 'success';
+        // variant could be success, error, warning, info, or default
+        enqueueSnackbar('Delete success', { variant });
+
+        const excuteAfterGetList = (globalStateNewest) => {
+          const stateCart2 = globalStateNewest.cart;
+          if (!stateCart2.isSuccess) {
+            const variant = 'error';
+            // variant could be success, error, warning, info, or default
+            enqueueSnackbar(stateCart2.errorMessage, { variant });
+          }
+        };
+
+        dispatch(getCartList(currentUser.id, excuteAfterGetList));
+      };
+
+      dispatch(deleteCart(currentUser.id, productId, excuteAfterDeleteCart));
+    }
+  };
   return (
     <TableContainer sx={{ minWidth: 720 }}>
       <Table>
@@ -55,6 +92,7 @@ export default function ProductList({ listCart }) {
             <TableCell align="left">Price</TableCell>
             <TableCell align="left">Quantity</TableCell>
             <TableCell align="right">Total Price</TableCell>
+            <TableCell align="right" />
             <TableCell align="right" />
           </TableRow>
         </TableHead>
@@ -88,6 +126,12 @@ export default function ProductList({ listCart }) {
                     }}
                   >
                     <Icon icon={editFill} width={20} height={20} />
+                  </MIconButton>
+                </TableCell>
+
+                <TableCell>
+                  <MIconButton onClick={() => handleDelateCart(product_id)}>
+                    <Icon icon={trash2Fill} width={20} height={20} />
                   </MIconButton>
                 </TableCell>
               </TableRow>

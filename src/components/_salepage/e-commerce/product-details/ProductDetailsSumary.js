@@ -30,7 +30,7 @@ import { useSnackbar } from 'notistack';
 
 // redux
 import { useDispatch, useSelector } from '../../../../redux/store';
-import { addCart, getCartList } from '../../../../redux/slices/cart';
+import { addCart, getCartList, updateCart } from '../../../../redux/slices/cart';
 // routes
 import { PATH_SALEPAGE } from '../../../../routes/paths';
 // utils
@@ -100,10 +100,11 @@ const Incrementer = (props) => {
 };
 
 ProductDetailsSumary.propTypes = {
-  product: PropTypes.object
+  product: PropTypes.object,
+  isEditCart: PropTypes.bool
 };
 
-export default function ProductDetailsSumary({ product }) {
+export default function ProductDetailsSumary({ product, isEditCart }) {
   const theme = useTheme();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -131,10 +132,15 @@ export default function ProductDetailsSumary({ product }) {
     },
     onSubmit: async (values, { setSubmitting }) => {
       try {
-        const excuteAfterAddCart = (globalStateNewest) => {
+        const excuteAfterCallApiCart = (globalStateNewest) => {
           if (globalStateNewest.cart.isSuccess) {
             const variant = 'success';
-            enqueueSnackbar('Add to cart success', { variant });
+            if (!isEditCart) {
+              enqueueSnackbar('Add to cart success', { variant });
+            } else {
+              enqueueSnackbar('Update cart item success', { variant });
+            }
+
             loadBackCartList();
           } else {
             const variant = 'error';
@@ -144,13 +150,23 @@ export default function ProductDetailsSumary({ product }) {
         };
 
         if (user) {
-          const newCart = {
-            user_id: user.id,
-            product_id: id,
-            quantity: values.quantity
-          };
+          if (!isEditCart) {
+            const newCart = {
+              user_id: user.id,
+              product_id: id,
+              quantity: values.quantity
+            };
 
-          dispatch(addCart(newCart, excuteAfterAddCart));
+            dispatch(addCart(newCart, excuteAfterCallApiCart));
+          } else {
+            const putCart = {
+              user_id: user.id,
+              product_id: id,
+              quantity: values.quantity
+            };
+
+            dispatch(updateCart(putCart, excuteAfterCallApiCart));
+          }
         } else {
           const variant = 'error';
           // variant could be success, error, warning, info, or default
@@ -215,7 +231,7 @@ export default function ProductDetailsSumary({ product }) {
               startIcon={<Icon icon={roundAddShoppingCart} />}
               sx={{ whiteSpace: 'nowrap' }}
             >
-              Add to Cart
+              {isEditCart ? 'Update Cart Item' : 'Add To Cart'}
             </Button>
             <Button
               fullWidth

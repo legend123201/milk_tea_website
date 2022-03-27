@@ -3,7 +3,20 @@ import { useEffect, useState } from 'react';
 import { filter, includes, orderBy } from 'lodash';
 import { useSnackbar } from 'notistack';
 // material
-import { Backdrop, Container, Typography, CircularProgress, Stack } from '@mui/material';
+import { Icon } from '@iconify/react';
+import searchFill from '@iconify/icons-eva/search-fill';
+import { useTheme, styled } from '@mui/material/styles';
+import {
+  Container,
+  Stack,
+  Box,
+  Toolbar,
+  Tooltip,
+  IconButton,
+  Typography,
+  OutlinedInput,
+  InputAdornment
+} from '@mui/material';
 // redux
 import { useDispatch, useSelector } from '../../redux/store';
 import { getProducts, filterProducts } from '../../redux/slices/product';
@@ -26,20 +39,41 @@ import {
 } from '../../components/_salepage/e-commerce/shop';
 import CartWidget from '../../components/_salepage/e-commerce/CartWidget';
 
+const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
+  width: 240,
+  transition: theme.transitions.create(['box-shadow', 'width'], {
+    easing: theme.transitions.easing.easeInOut,
+    duration: theme.transitions.duration.shorter
+  }),
+  '&.Mui-focused': { width: 320, boxShadow: theme.customShadows.z8 },
+  '& fieldset': {
+    borderWidth: `1px !important`,
+    borderColor: `${theme.palette.grey[500_32]} !important`
+  }
+}));
+
 // ----------------------------------------------------------------------
 
 export default function EcommerceShop() {
   const { themeStretch } = useSettings();
   const dispatch = useDispatch();
   const { listData, isLoading } = useSelector((state) => state.myCustomProduct);
+  const currentUser = useSelector((state) => state.myCustomUser.data);
   const { enqueueSnackbar } = useSnackbar();
+  const [listDataFiltered, setListDataFiltered] = useState([]);
+  const [searchValue, setSearchValue] = useState('');
+
+  useEffect(() => {
+    setListDataFiltered(listData);
+  }, [listData]);
 
   useEffect(() => {
     const excuteAfterGetList = (globalStateNewest) => {
-      if (!globalStateNewest.myCustomProduct.isSuccess) {
+      const stateMyCustomProduct = globalStateNewest.myCustomProduct;
+      if (!stateMyCustomProduct.isSuccess) {
         const variant = 'error';
         // variant could be success, error, warning, info, or default
-        enqueueSnackbar(globalStateNewest.myCustomProduct.errorMessage, { variant });
+        enqueueSnackbar(stateMyCustomProduct.errorMessage, { variant });
       }
     };
 
@@ -47,33 +81,57 @@ export default function EcommerceShop() {
   }, [dispatch]);
 
   useEffect(() => {
-    const excuteAfterGetList = (globalStateNewest) => {
-      if (!globalStateNewest.cart.isSuccess) {
-        const variant = 'error';
-        // variant could be success, error, warning, info, or default
-        enqueueSnackbar(globalStateNewest.cart.errorMessage, { variant });
-      }
-    };
+    if (currentUser) {
+      const excuteAfterGetList = (globalStateNewest) => {
+        const stateCart = globalStateNewest.cart;
+        if (!stateCart.isSuccess) {
+          const variant = 'error';
+          // variant could be success, error, warning, info, or default
+          enqueueSnackbar(stateCart.errorMessage, { variant });
+        }
+      };
 
-    dispatch(getCartList(1, excuteAfterGetList));
+      dispatch(getCartList(currentUser.id, excuteAfterGetList));
+    }
   }, [dispatch]);
+
+  const handleOnChangeSearchInput = (e) => {
+    const val = e.target.value;
+    setSearchValue(val);
+    if (val !== '') {
+      setListDataFiltered([...listData].filter((item, index) => item.name.toLowerCase().includes(val.toLowerCase())));
+    } else {
+      setListDataFiltered(listData);
+    }
+  };
 
   return (
     <Page title="Ecommerce: Shop | Minimal-UI">
       <Container maxWidth={themeStretch ? false : 'lg'}>
-        <HeaderBreadcrumbs
-          heading="Shop"
-          links={[
-            { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            {
-              name: 'E-Commerce',
-              href: PATH_DASHBOARD.eCommerce.root
-            },
-            { name: 'Shop' }
-          ]}
+        <HeaderBreadcrumbs heading="Shop" links={[{ name: 'Shop' }]} />
+
+        <SearchStyle
+          value={searchValue}
+          onChange={handleOnChangeSearchInput}
+          placeholder="Search by name..."
+          startAdornment={
+            <InputAdornment position="start">
+              <Box component={Icon} icon={searchFill} sx={{ color: 'text.disabled' }} />
+            </InputAdornment>
+          }
         />
 
-        <ShopProductList products={listData} isLoad={isLoading} />
+        <Stack direction="row" justifyContent="flex-end" sx={{ mb: 2 }}>
+          <ShopProductSort products={listData} setListDataFiltered={setListDataFiltered} />
+        </Stack>
+        {listDataFiltered.length > 0 ? (
+          <ShopProductList products={listDataFiltered} isLoad={isLoading} />
+        ) : (
+          <Typography variant="body1" sx={{ textAlign: 'center' }}>
+            No item found!
+          </Typography>
+        )}
+
         <CartWidget />
       </Container>
     </Page>

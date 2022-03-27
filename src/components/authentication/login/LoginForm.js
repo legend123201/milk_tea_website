@@ -44,8 +44,9 @@ export default function LoginForm() {
     onSubmit: async (values, { setErrors, setSubmitting, resetForm }) => {
       try {
         const excuteAfterLogin = async (globalStateNewest) => {
-          if (globalStateNewest.staff.isSuccess) {
-            localStorage.setItem('staffId', globalStateNewest.staff.currentStaff.id); // dòng thêm
+          const stateStaff = globalStateNewest.staff;
+          if (stateStaff.isSuccess) {
+            localStorage.setItem('staffId', stateStaff.currentStaff.id); // dòng thêm
             // dưới đây là những dòng code có sẵn của project
             await login(values.email, values.password);
             enqueueSnackbar('Login success', {
@@ -60,12 +61,13 @@ export default function LoginForm() {
               setSubmitting(false);
             }
           } else {
-            await login(values.email, values.password); // dòng này thêm để có fail đi nữa vẫn vô đc =)))))
+            // await login(values.email, values.password); // dòng này thêm để có fail đi nữa vẫn vô đc =)))))
             const variant = 'error';
             // variant could be success, error, warning, info, or default
-            enqueueSnackbar(globalStateNewest.staff.errorMessage, { variant });
+            enqueueSnackbar(stateStaff.errorMessage, { variant });
           }
         };
+
         const loginInfo = { username: values.email, password: values.password };
         dispatch(loginAPI(loginInfo, excuteAfterLogin));
       } catch (error) {

@@ -34,8 +34,20 @@ const slice = createSlice({
       state.listData = action.payload;
     },
 
-    // ADD CART
+    // ADD CART SUCCESS
     addCartSuccess(state, action) {
+      state.isLoading = false;
+      state.isSuccess = true;
+    },
+
+    // ADD CART SUCCESS
+    deleteCartSuccess(state, action) {
+      state.isLoading = false;
+      state.isSuccess = true;
+    },
+
+    // UPDATE CART SUCCESS
+    updateCartSuccess(state, action) {
       state.isLoading = false;
       state.isSuccess = true;
     }
@@ -71,6 +83,39 @@ export function addCart(newCart, myCallBack) {
     try {
       const response = await axios.post('/carts', newCart);
       dispatch(slice.actions.addCartSuccess());
+    } catch (e) {
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
+      dispatch(slice.actions.hasError(messageError));
+    } finally {
+      if (myCallBack) myCallBack(getState());
+    }
+  };
+}
+
+export function deleteCart(userId, productId, myCallBack) {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await axios.delete(`/carts/userId/${userId}/productId/${productId}`);
+      dispatch(slice.actions.deleteCartSuccess());
+    } catch (e) {
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
+      dispatch(slice.actions.hasError(messageError));
+    } finally {
+      if (myCallBack) myCallBack(getState());
+    }
+  };
+}
+
+export function updateCart(updateCart, myCallBack) {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await axios.put(
+        `/carts/userId/${updateCart.user_id}/productId/${updateCart.product_id}`,
+        updateCart
+      );
+      dispatch(slice.actions.updateCartSuccess());
     } catch (e) {
       const messageError = e.message ? e.message : defaultErrorString + e.toString();
       dispatch(slice.actions.hasError(messageError));
