@@ -67,6 +67,7 @@ export default function EcommerceShop() {
     setListDataFiltered(listData);
   }, [listData]);
 
+  // fetch item list
   useEffect(() => {
     const excuteAfterGetList = (globalStateNewest) => {
       const stateMyCustomProduct = globalStateNewest.myCustomProduct;
@@ -80,6 +81,7 @@ export default function EcommerceShop() {
     dispatch(getMyCustomProductList(excuteAfterGetList));
   }, [dispatch]);
 
+  // fetch list item in cart
   useEffect(() => {
     if (currentUser) {
       const excuteAfterGetList = (globalStateNewest) => {
@@ -93,7 +95,7 @@ export default function EcommerceShop() {
 
       dispatch(getCartList(currentUser.id, excuteAfterGetList));
     }
-  }, [dispatch]);
+  }, [dispatch, currentUser]);
 
   const handleOnChangeSearchInput = (e) => {
     const val = e.target.value;

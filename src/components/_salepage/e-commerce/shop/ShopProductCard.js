@@ -1,17 +1,22 @@
 /* eslint-disable camelcase */
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { paramCase } from 'change-case';
 import { Link as RouterLink } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 // material
 import { Box, Card, Link, Typography, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 // routes
 import { PATH_SALEPAGE } from '../../../../routes/paths';
 // utils
 import { fCurrency, fNumber } from '../../../../utils/formatNumber';
+import { useDispatch, useSelector } from '../../../../redux/store';
 //
 import Label from '../../../Label';
 import ColorPreview from '../../../ColorPreview';
+import { addCart, deleteCart, getCartList } from '../../../../redux/slices/cart';
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +37,90 @@ ShopProductCard.propTypes = {
 export default function ShopProductCard({ product }) {
   const { id, name, image, unit_sale_price, measure_unit } = product;
   const linkTo = `${PATH_SALEPAGE.root}/product/${id}`;
+  const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
+
+  // useState
+  const [isAlreadyInCart, setIsAlreadyInCart] = useState(false);
+
+  // useSelector
+  const user = useSelector((state) => state.myCustomUser.data);
+  const listCart = useSelector((state) => state.cart.listData);
+
+  useEffect(() => {
+    if (listCart && listCart.length > 0) {
+      const currentProductIsAdded = listCart.find((item) => item.product_id === Number(id));
+      if (currentProductIsAdded) {
+        setIsAlreadyInCart(true);
+      } else {
+        setIsAlreadyInCart(false);
+      }
+    }
+  }, [listCart]);
+
+  // functions
+  const loadBackCartList = () => {
+    const excuteAfterGetList = (globalStateNewest) => {
+      const stateCart = globalStateNewest.cart;
+      if (!stateCart.isSuccess) {
+        const variant = 'error';
+        // variant could be success, error, warning, info, or default
+        enqueueSnackbar(stateCart.errorMessage, { variant });
+      }
+    };
+
+    dispatch(getCartList(user.id, excuteAfterGetList));
+  };
+
+  const excuteAfterDeleteCart = (globalStateNewest) => {
+    const stateCart = globalStateNewest.cart;
+    if (!stateCart.isSuccess) {
+      const variant = 'error';
+      // variant could be success, error, warning, info, or default
+      enqueueSnackbar(stateCart.errorMessage, { variant });
+    }
+
+    const variant = 'success';
+    // variant could be success, error, warning, info, or default
+    enqueueSnackbar('Remove from cart success', { variant });
+
+    loadBackCartList();
+  };
+
+  const excuteAfterAddCart = (globalStateNewest) => {
+    const stateCart = globalStateNewest.cart;
+    if (stateCart.isSuccess) {
+      const variant = 'success';
+      // variant could be success, error, warning, info, or default
+      enqueueSnackbar('Add to cart success', { variant });
+
+      loadBackCartList();
+    } else {
+      const variant = 'error';
+      // variant could be success, error, warning, info, or default
+      enqueueSnackbar(stateCart.errorMessage, { variant });
+    }
+  };
+
+  const handleAddToCart = () => {
+    if (!user) {
+      const variant = 'error';
+      // variant could be success, error, warning, info, or default
+      enqueueSnackbar('Please login to use cart!', { variant });
+    }
+
+    if (isAlreadyInCart) {
+      dispatch(deleteCart(user.id, id, excuteAfterDeleteCart));
+    } else {
+      const newCart = {
+        user_id: user.id,
+        product_id: id,
+        quantity: 1
+      };
+
+      dispatch(addCart(newCart, excuteAfterAddCart));
+    }
+  };
 
   return (
     <Card>
@@ -46,7 +135,23 @@ export default function ShopProductCard({ product }) {
           </Typography>
         </Link>
 
-        <Stack direction="row" alignItems="center" justifyContent="end">
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Box
+            onClick={handleAddToCart}
+            className={user && isAlreadyInCart ? 'active' : ''}
+            sx={{
+              cursor: 'pointer',
+              '&.active': {
+                color: 'red'
+              },
+              '&:hover': {
+                color: 'rgba(0,0,0,0.5)'
+              }
+            }}
+          >
+            <ShoppingCartIcon sx={{ width: '20px', height: '20px' }} />
+          </Box>
+
           <Typography variant="subtitle1">
             &nbsp;
             {fNumber(unit_sale_price)} vnd / {measure_unit}

@@ -115,10 +115,11 @@ export default function ProductDetailsSumary({ product, isEditCart }) {
 
   const loadBackCartList = () => {
     const excuteAfterGetList = (globalStateNewest) => {
-      if (!globalStateNewest.cart.isSuccess) {
+      const stateCart = globalStateNewest.cart;
+      if (!stateCart.isSuccess) {
         const variant = 'error';
         // variant could be success, error, warning, info, or default
-        enqueueSnackbar(globalStateNewest.cart.errorMessage, { variant });
+        enqueueSnackbar(stateCart.errorMessage, { variant });
       }
     };
 
@@ -133,7 +134,8 @@ export default function ProductDetailsSumary({ product, isEditCart }) {
     onSubmit: async (values, { setSubmitting }) => {
       try {
         const excuteAfterCallApiCart = (globalStateNewest) => {
-          if (globalStateNewest.cart.isSuccess) {
+          const stateCart = globalStateNewest.cart;
+          if (stateCart.isSuccess) {
             const variant = 'success';
             if (!isEditCart) {
               enqueueSnackbar('Add to cart success', { variant });
@@ -145,7 +147,7 @@ export default function ProductDetailsSumary({ product, isEditCart }) {
           } else {
             const variant = 'error';
             // variant could be success, error, warning, info, or default
-            enqueueSnackbar(globalStateNewest.cart.errorMessage, { variant });
+            enqueueSnackbar(stateCart.errorMessage, { variant });
           }
         };
 

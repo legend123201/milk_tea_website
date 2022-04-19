@@ -26,13 +26,22 @@ import { useNavigate } from 'react-router';
 import { PATH_SALEPAGE } from '../../../../routes/paths';
 // redux
 import { useDispatch } from '../../../../redux/store';
-import { deleteCart, getCartList } from '../../../../redux/slices/cart';
+import { deleteCart, getCartList, updateCart } from '../../../../redux/slices/cart';
 // utils
 import { fCurrency } from '../../../../utils/formatNumber';
 //
 import { MIconButton } from '../../../@material-extend';
 
 // ----------------------------------------------------------------------
+const IncrementerStyle = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  marginBottom: theme.spacing(0.5),
+  padding: theme.spacing(0.5, 0.75),
+  borderRadius: theme.shape.borderRadius,
+  border: `solid 1px ${theme.palette.grey[500_32]}`
+}));
 
 const ThumbImgStyle = styled('img')(({ theme }) => ({
   width: 64,
@@ -44,6 +53,32 @@ const ThumbImgStyle = styled('img')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
+Incrementer.propTypes = {
+  available: PropTypes.number,
+  quantity: PropTypes.number,
+  onIncrease: PropTypes.func,
+  onDecrease: PropTypes.func
+};
+
+function Incrementer({ available, quantity, onIncrease, onDecrease }) {
+  return (
+    <Box sx={{ width: 96, textAlign: 'right' }}>
+      <IncrementerStyle>
+        <MIconButton size="small" color="inherit" onClick={onDecrease} disabled={quantity <= 1}>
+          <Icon icon={minusFill} width={16} height={16} />
+        </MIconButton>
+        {quantity}
+        <MIconButton size="small" color="inherit" onClick={onIncrease} disabled={quantity >= available}>
+          <Icon icon={plusFill} width={16} height={16} />
+        </MIconButton>
+      </IncrementerStyle>
+      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+        available: {available}
+      </Typography>
+    </Box>
+  );
+}
+
 ProductList.propTypes = {
   listCart: PropTypes.array
 };
@@ -53,6 +88,34 @@ export default function ProductList({ listCart }) {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const currentUser = useSelector((state) => state.myCustomUser.data);
+
+  const loadBackCartList = () => {
+    const excuteAfterGetList = (globalStateNewest) => {
+      const stateCart = globalStateNewest.cart;
+      if (!stateCart.isSuccess) {
+        const variant = 'error';
+        // variant could be success, error, warning, info, or default
+        enqueueSnackbar(stateCart.errorMessage, { variant });
+      }
+    };
+
+    dispatch(getCartList(currentUser.id, excuteAfterGetList));
+  };
+
+  const excuteAfterUpdateCartItem = (globalStateNewest) => {
+    const stateCart = globalStateNewest.cart;
+    if (stateCart.isSuccess) {
+      const variant = 'success';
+      // variant could be success, error, warning, info, or default
+      enqueueSnackbar('Update cart item success', { variant });
+
+      loadBackCartList();
+    } else {
+      const variant = 'error';
+      // variant could be success, error, warning, info, or default
+      enqueueSnackbar(stateCart.errorMessage, { variant });
+    }
+  };
 
   const handleDelateCart = (productId) => {
     if (currentUser) {
@@ -68,21 +131,33 @@ export default function ProductList({ listCart }) {
         // variant could be success, error, warning, info, or default
         enqueueSnackbar('Delete success', { variant });
 
-        const excuteAfterGetList = (globalStateNewest) => {
-          const stateCart2 = globalStateNewest.cart;
-          if (!stateCart2.isSuccess) {
-            const variant = 'error';
-            // variant could be success, error, warning, info, or default
-            enqueueSnackbar(stateCart2.errorMessage, { variant });
-          }
-        };
-
-        dispatch(getCartList(currentUser.id, excuteAfterGetList));
+        loadBackCartList();
       };
 
       dispatch(deleteCart(currentUser.id, productId, excuteAfterDeleteCart));
     }
   };
+
+  const handleIncreaseQuantity = (productId, inCartQuantity) => {
+    const putCart = {
+      user_id: currentUser.id,
+      product_id: productId,
+      quantity: inCartQuantity + 1
+    };
+
+    dispatch(updateCart(putCart, excuteAfterUpdateCartItem));
+  };
+
+  const handleDecreaseQuantity = (productId, inCartQuantity) => {
+    const putCart = {
+      user_id: currentUser.id,
+      product_id: productId,
+      quantity: inCartQuantity - 1
+    };
+
+    dispatch(updateCart(putCart, excuteAfterUpdateCartItem));
+  };
+
   return (
     <TableContainer sx={{ minWidth: 720 }}>
       <Table>
@@ -99,7 +174,7 @@ export default function ProductList({ listCart }) {
 
         <TableBody>
           {listCart.map((item) => {
-            const { product_id, quantity, name, unit_sale_price, measure_unit, image } = item;
+            const { product_id, quantity, name, unit_sale_price, measure_unit, image, quantity_in_stock } = item;
             return (
               <TableRow key={product_id}>
                 <TableCell>
@@ -115,7 +190,15 @@ export default function ProductList({ listCart }) {
 
                 <TableCell align="left">{fCurrency(unit_sale_price)}</TableCell>
 
-                <TableCell align="left">{quantity}</TableCell>
+                {/* <TableCell align="left">{quantity}</TableCell> */}
+                <TableCell align="left">
+                  <Incrementer
+                    quantity={quantity}
+                    available={quantity_in_stock}
+                    onDecrease={() => handleDecreaseQuantity(product_id, quantity)}
+                    onIncrease={() => handleIncreaseQuantity(product_id, quantity)}
+                  />
+                </TableCell>
 
                 <TableCell align="right">{fCurrency(unit_sale_price * quantity)}</TableCell>
 
