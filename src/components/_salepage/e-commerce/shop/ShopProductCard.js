@@ -107,6 +107,7 @@ export default function ShopProductCard({ product }) {
       const variant = 'error';
       // variant could be success, error, warning, info, or default
       enqueueSnackbar('Please login to use cart!', { variant });
+      return;
     }
 
     if (isAlreadyInCart) {

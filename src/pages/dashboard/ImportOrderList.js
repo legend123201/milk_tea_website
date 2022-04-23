@@ -75,14 +75,14 @@ function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// hàm orderBy và filter (theo staff name của importOrder) của table
+// hàm orderBy và filter (theo datetime của importOrder) của table
 function applySortFilter(array, comparator, query) {
   // nếu có filter thì ưu tiên filter
   if (query) {
     // filter bằng hàm filter có sẵn có lodash, lodash mặc định xếp chữ tăng dần theo alphabet, indexOf mà khác -1 nghĩa là có tìm thấy
     return filter(
       array,
-      (_importOrder) => _importOrder.name.toString().toLowerCase().indexOf(query.toLowerCase()) !== -1
+      (_importOrder) => fDateTime(_importOrder.datetime).toLowerCase().indexOf(query.toLowerCase()) !== -1
     );
   }
 
@@ -185,7 +185,7 @@ export default function ImportOrderList() {
           <MyCustomListToolbar
             filterProp={filterValue}
             onFilterProp={handleFilterByValue}
-            searchPlaceholder="Search by staff name"
+            searchPlaceholder="Search by date (dd mmm yyyy)"
           />
 
           <Scrollbar>

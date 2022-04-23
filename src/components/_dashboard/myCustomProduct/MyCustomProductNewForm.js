@@ -33,11 +33,11 @@ export default function MyCustomProductNewForm({ isEdit, currentMyCustomProduct 
   const dispatch = useDispatch();
 
   const NewMyCustomProductSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
-    quantity_in_stock: Yup.number().required('Quantity in stock is required').min(1),
-    unit_perchase_price: Yup.number().required('Unit perchase price is required').min(1),
-    unit_sale_price: Yup.number().required('Unit sale price is required').min(1),
-    measure_unit: Yup.string().required('Measure unit is required'),
+    name: Yup.string().required('Name is required').max(50),
+    quantity_in_stock: Yup.number().integer().required('Quantity in stock is required').min(1).max(9999999),
+    unit_perchase_price: Yup.number().integer().required('Unit perchase price is required').min(1).max(9999999),
+    unit_sale_price: Yup.number().integer().required('Unit sale price is required').min(1).max(9999999),
+    measure_unit: Yup.string().required('Measure unit is required').max(50),
     image: Yup.mixed().required('Image is required')
   });
 

@@ -140,7 +140,12 @@ export default function MyCustomProductList() {
     } else {
       const variant = 'error';
       // variant could be success, error, warning, info, or default
-      enqueueSnackbar(stateMyCustomProduct.errorMessage, { variant });
+
+      const stringError = stateMyCustomProduct.errorMessage.includes('foreign key constraint')
+        ? 'Can not delete! This product has been billed!'
+        : stateMyCustomProduct.errorMessage;
+
+      enqueueSnackbar(stringError, { variant });
     }
   };
 

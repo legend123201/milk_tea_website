@@ -53,7 +53,7 @@ import {
 const TABLE_HEAD = [
   { id: 'datetime', label: 'Date Time', alignRight: false },
   { id: 'total', label: 'Price', alignRight: false },
-  { id: 'staff_id', label: 'Status', alignRight: false },
+  { id: 'isApproved', label: 'Status', alignRight: false },
   { id: '' }
 ];
 
@@ -169,7 +169,11 @@ export default function MyBills() {
         />
 
         <Card>
-          <MyCustomListToolbar filterProp={filterValue} onFilterProp={handleFilterByValue} />
+          <MyCustomListToolbar
+            filterProp={filterValue}
+            onFilterProp={handleFilterByValue}
+            searchPlaceholder="Search by date (dd mmm yyyy)"
+          />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
@@ -183,7 +187,7 @@ export default function MyBills() {
                 />
                 <TableBody>
                   {filteredMyBills.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, idx) => {
-                    const { bill_id, datetime, total, staff_id } = row;
+                    const { bill_id, datetime, total, isApproved } = row;
 
                     return (
                       <TableRow hover key={idx} tabIndex={-1} role="checkbox">
@@ -193,9 +197,9 @@ export default function MyBills() {
                         <TableCell align="left">
                           <Label
                             variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
-                            color={(staff_id && 'success') || 'warning'}
+                            color={(isApproved && 'success') || 'warning'}
                           >
-                            {staff_id ? 'Verified' : 'Pending'}
+                            {isApproved ? 'Verified' : 'Pending'}
                           </Label>
                         </TableCell>
 

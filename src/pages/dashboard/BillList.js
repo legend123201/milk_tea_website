@@ -55,6 +55,7 @@ const TABLE_HEAD = [
   { id: 'user_id', label: 'User ID', alignRight: false },
   { id: 'staff_name', label: 'Staff Name', alignRight: false },
   { id: 'staff_id', label: 'Staff ID', alignRight: false },
+  { id: 'isApproved', label: 'Status', alignRight: false },
   { id: '' }
 ];
 
@@ -77,14 +78,14 @@ function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// hàm orderBy và filter (theo user id của product) của table
+// hàm orderBy và filter (theo datetime của product) của table
 function applySortFilter(array, comparator, query) {
   // nếu có filter thì ưu tiên filter
   if (query) {
     // filter bằng hàm filter có sẵn có lodash, lodash mặc định xếp chữ tăng dần theo alphabet, indexOf mà khác -1 nghĩa là có tìm thấy
     return filter(
       array,
-      (_bill) => _bill.user_id.toString().toLowerCase().indexOf(query.toString().toLowerCase()) !== -1
+      (_bill) => fDateTime(_bill.datetime).toLowerCase().indexOf(query.toString().toLowerCase()) !== -1
     );
   }
 
@@ -176,7 +177,7 @@ export default function BillList() {
           <MyCustomListToolbar
             filterProp={filterValue}
             onFilterProp={handleFilterByValue}
-            searchPlaceholder="Search by user id"
+            searchPlaceholder="Search by date (dd mmm yyyy)"
           />
 
           <Scrollbar>
@@ -191,7 +192,7 @@ export default function BillList() {
                 />
                 <TableBody>
                   {filteredBills.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, datetime, user_name, user_id, staff_name, staff_id } = row;
+                    const { id, datetime, user_name, user_id, staff_name, staff_id, isApproved } = row;
 
                     return (
                       <TableRow hover key={id} tabIndex={-1} role="checkbox">
@@ -201,6 +202,14 @@ export default function BillList() {
                         <TableCell align="left">{user_id}</TableCell>
                         <TableCell align="left">{staff_name}</TableCell>
                         <TableCell align="left">{staff_id}</TableCell>
+                        <TableCell align="left">
+                          <Label
+                            variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
+                            color={(isApproved && 'success') || 'warning'}
+                          >
+                            {isApproved ? 'Verified' : 'Pending'}
+                          </Label>
+                        </TableCell>
                         <TableCell align="right">
                           <MyCustomListMoreMenu onDetail={() => handleDetail(id, user_id, staff_id)} />
                         </TableCell>

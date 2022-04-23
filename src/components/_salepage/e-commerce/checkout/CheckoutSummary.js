@@ -16,6 +16,8 @@ import {
 } from '@mui/material';
 // utils
 import { fCurrency } from '../../../../utils/formatNumber';
+// redux
+import { useDispatch, useSelector } from '../../../../redux/store';
 
 // ----------------------------------------------------------------------
 
@@ -24,6 +26,8 @@ CheckoutSummary.propTypes = {
 };
 
 export default function CheckoutSummary({ total }) {
+  const currentUser = useSelector((state) => state.myCustomUser.data);
+
   return (
     <Card sx={{ mb: 3 }}>
       <CardHeader title="Order Summary" />
@@ -32,23 +36,23 @@ export default function CheckoutSummary({ total }) {
         <Stack spacing={2}>
           <Stack direction="row" justifyContent="space-between">
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              Sub Total
+              User name:
             </Typography>
-            <Typography variant="subtitle2">{fCurrency(5000)}</Typography>
+            <Typography variant="subtitle2">{currentUser?.name}</Typography>
           </Stack>
 
           <Stack direction="row" justifyContent="space-between">
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              Discount
+              Phone number:
             </Typography>
-            <Typography variant="subtitle2">{fCurrency(7000)}</Typography>
+            <Typography variant="subtitle2">{currentUser?.phone}</Typography>
           </Stack>
 
-          <Stack direction="row" justifyContent="space-between">
+          <Stack justifyContent="space-between">
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              Shipping
+              Address:
             </Typography>
-            <Typography variant="subtitle2">{fCurrency(9000)}</Typography>
+            <Typography variant="subtitle2">{currentUser?.address}</Typography>
           </Stack>
 
           <Divider />

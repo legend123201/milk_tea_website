@@ -28,15 +28,16 @@ export default function MyCustomProductCreate() {
   const { enqueueSnackbar } = useSnackbar();
 
   const excuteAfterGetItem = (globalStateNewest) => {
-    if (!globalStateNewest.myCustomProduct.isSuccess) {
+    const stateMyCustomProduct = globalStateNewest.myCustomProduct;
+    if (!stateMyCustomProduct.isSuccess) {
       const variant = 'error';
       // variant could be success, error, warning, info, or default
-      enqueueSnackbar(globalStateNewest.myCustomProduct.errorMessage, { variant });
+      enqueueSnackbar(stateMyCustomProduct.errorMessage, { variant });
     }
   };
 
   useEffect(() => {
-    if (id) {
+    if (isEdit && id) {
       dispatch(getMyCustomProduct(id, excuteAfterGetItem));
     }
   }, [dispatch]);

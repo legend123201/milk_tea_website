@@ -53,8 +53,8 @@ export default function ImportOrderDetailNewFormDialog({ open, handleCloseDialog
 
   const ImportOrderDetailSchema = Yup.object().shape({
     product_id: Yup.number().required('Product ID is required'),
-    quantity: Yup.number().required('Quantity is required').min(1),
-    current_unit_perchase_price: Yup.number().required('Current unit perchase price is required').min(1),
+    quantity: Yup.number().integer().required('Quantity is required').min(1),
+    current_unit_perchase_price: Yup.number().integer().required('Current unit perchase price is required').min(1),
     name: Yup.string().required('Name is required')
   });
 

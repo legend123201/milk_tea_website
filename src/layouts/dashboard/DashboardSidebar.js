@@ -7,6 +7,8 @@ import { Box, Link, Stack, Button, Drawer, Tooltip, Typography, CardActionArea }
 // hooks
 import useAuth from '../../hooks/useAuth';
 import useCollapseDrawer from '../../hooks/useCollapseDrawer';
+// redux
+import { useDispatch, useSelector } from '../../redux/store';
 // routes
 import { PATH_DASHBOARD, PATH_DOCS } from '../../routes/paths';
 // components
@@ -94,6 +96,7 @@ DashboardSidebar.propTypes = {
 export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
   const { pathname } = useLocation();
   const { user } = useAuth();
+  const currentStaff = useSelector((state) => state.staff.currentStaff);
 
   const { isCollapse, collapseClick, collapseHover, onToggleCollapse, onHoverEnter, onHoverLeave } =
     useCollapseDrawer();
@@ -145,10 +148,12 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
               <MyAvatar />
               <Box sx={{ ml: 2 }}>
                 <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                  {user?.displayName}
+                  {/* {user?.displayName} */}
+                  {currentStaff?.name}
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                  {user?.role}
+                  {/* {user?.role} */}
+                  admin
                 </Typography>
               </Box>
             </AccountStyle>
