@@ -83,6 +83,10 @@ export default function CheckoutCart() {
         const variant = 'success';
         // variant could be success, error, warning, info, or default
         enqueueSnackbar('Create bill success!', { variant });
+
+        dispatch(getCartList(currentUser.id));
+
+        navigate(PATH_SALEPAGE.myBills);
       } else {
         const variant = 'error';
         // variant could be success, error, warning, info, or default

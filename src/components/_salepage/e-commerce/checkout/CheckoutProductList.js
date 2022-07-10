@@ -107,7 +107,7 @@ export default function ProductList({ listCart }) {
     if (stateCart.isSuccess) {
       const variant = 'success';
       // variant could be success, error, warning, info, or default
-      enqueueSnackbar('Update cart item success', { variant });
+      // enqueueSnackbar('Update cart item success', { variant });
 
       loadBackCartList();
     } else {
