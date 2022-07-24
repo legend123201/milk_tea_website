@@ -143,7 +143,7 @@ export function getMyCustomUser(userId, myCallBack) {
     dispatch(slice.actions.startLoading());
     try {
       const response = await axios.get(`/users/${userId}`);
-      dispatch(slice.actions.getMyCustomUserSuccess(response.data.data[0]));
+      dispatch(slice.actions.getMyCustomUserSuccess(response.data.data));
     } catch (e) {
       console.log(e);
       const messageError = e.message ? e.message : defaultErrorString + e.toString();

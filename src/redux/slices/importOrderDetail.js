@@ -67,11 +67,11 @@ export function getImportOrderDetailList(myCallBack) {
   };
 }
 
-export function getImportOrderDetailListById(importOrderId, myCallBack) {
+export function getImportOrderDetailListByImportOrderId(importOrderId, myCallBack) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get(`/importOrderDetails/ ${importOrderId}`);
+      const response = await axios.get(`/importOrderDetails/importOrderId/${importOrderId}`);
       dispatch(slice.actions.getImportOrderDetailListByIdSuccess(response.data.data));
     } catch (e) {
       console.log(e);

@@ -70,7 +70,11 @@ export function addImportOrder(staffId, detailList, myCallBack) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.post(`/importOrders/${staffId}`, detailList);
+      const body = {
+        importOrderDetailDtoList: detailList
+      };
+
+      const response = await axios.post(`/importOrders/staffId/${staffId}`, body);
       dispatch(slice.actions.addImportOrderSuccess(response.data.data));
     } catch (e) {
       console.log(e);

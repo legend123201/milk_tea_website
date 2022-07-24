@@ -52,7 +52,7 @@ const TABLE_HEAD = [
   { id: 'id', label: 'ID', alignRight: false },
   { id: 'datetime', label: 'Date Time', alignRight: false },
   { id: 'name', label: 'Staff Name', alignRight: false },
-  { id: 'staff_id', label: 'Staff ID', alignRight: false },
+  { id: 'staffId', label: 'Staff ID', alignRight: false },
   { id: '' }
 ];
 
@@ -200,16 +200,16 @@ export default function ImportOrderList() {
                 />
                 <TableBody>
                   {filteredImportOrders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, datetime, staff_id, name } = row;
+                    const { id, datetime, staff } = row;
 
                     return (
                       <TableRow hover key={id} tabIndex={-1} role="checkbox">
                         <TableCell align="left">{id}</TableCell>
                         <TableCell align="left">{fDateTime(datetime)}</TableCell>
-                        <TableCell align="left">{name}</TableCell>
-                        <TableCell align="left">{staff_id}</TableCell>
+                        <TableCell align="left">{staff.name}</TableCell>
+                        <TableCell align="left">{staff.id}</TableCell>
                         <TableCell align="right">
-                          <MyCustomListMoreMenu onDetail={() => handleDetail(id, staff_id)} />
+                          <MyCustomListMoreMenu onDetail={() => handleDetail(id, staff.id)} />
                         </TableCell>
                       </TableRow>
                     );

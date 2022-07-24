@@ -53,10 +53,10 @@ export default function ShopProductSort({ products, setListDataFiltered }) {
     } else if (value === 'priceDesc') {
       setListDataFiltered(
         [...products].sort((a, b) => {
-          if (a.unit_sale_price > b.unit_sale_price) {
+          if (a.unitSalePrice > b.unitSalePrice) {
             return -1;
           }
-          if (a.unit_sale_price < b.unit_sale_price) {
+          if (a.unitSalePrice < b.unitSalePrice) {
             return 1;
           }
           return 0;
@@ -65,10 +65,10 @@ export default function ShopProductSort({ products, setListDataFiltered }) {
     } else {
       setListDataFiltered(
         [...products].sort((a, b) => {
-          if (a.unit_sale_price < b.unit_sale_price) {
+          if (a.unitSalePrice < b.unitSalePrice) {
             return -1;
           }
-          if (a.unit_sale_price > b.unit_sale_price) {
+          if (a.unitSalePrice > b.unitSalePrice) {
             return 1;
           }
           return 0;

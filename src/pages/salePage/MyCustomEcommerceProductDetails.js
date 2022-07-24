@@ -94,7 +94,7 @@ export default function EcommerceProductDetails() {
 
   useEffect(() => {
     if (listCart.length > 0) {
-      const currentProductIsAdded = listCart.find((item) => item.product_id === Number(id));
+      const currentProductIsAdded = listCart.find((item) => item.product.id === Number(id));
       if (currentProductIsAdded) {
         setIsEditCart(true);
       }

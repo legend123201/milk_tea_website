@@ -82,9 +82,9 @@ export function getStaff(isGetCurrentStaff, staffId, myCallBack) {
     try {
       const response = await axios.get(`/staffs/${staffId}`);
       if (isGetCurrentStaff) {
-        dispatch(slice.actions.getCurrentStaffSuccess(response.data.data[0]));
+        dispatch(slice.actions.getCurrentStaffSuccess(response.data.data));
       } else {
-        dispatch(slice.actions.getStaffOfOrderSuccess(response.data.data[0]));
+        dispatch(slice.actions.getStaffOfOrderSuccess(response.data.data));
       }
     } catch (e) {
       // e sẽ tự động là response của server trả về nếu như server có trả về, còn không nó là lỗi của chương trình

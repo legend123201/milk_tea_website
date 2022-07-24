@@ -65,7 +65,7 @@ export function getCartList(userId, myCallBack) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get(`/carts/user_id/${userId}`);
+      const response = await axios.get(`/carts/userId/${userId}`);
       dispatch(slice.actions.getCartListSuccess(response.data.data));
     } catch (e) {
       console.log(e);
@@ -112,7 +112,7 @@ export function updateCart(updateCart, myCallBack) {
     dispatch(slice.actions.startLoading());
     try {
       const response = await axios.put(
-        `/carts/userId/${updateCart.user_id}/productId/${updateCart.product_id}`,
+        `/carts/userId/${updateCart.userId}/productId/${updateCart.productId}`,
         updateCart
       );
       dispatch(slice.actions.updateCartSuccess());

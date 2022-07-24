@@ -51,10 +51,10 @@ import {
 const TABLE_HEAD = [
   { id: 'id', label: 'ID', alignRight: false },
   { id: 'datetime', label: 'Date Time', alignRight: false },
-  { id: 'user_name', label: 'User Name', alignRight: false },
-  { id: 'user_id', label: 'User ID', alignRight: false },
-  { id: 'staff_name', label: 'Staff Name', alignRight: false },
-  { id: 'staff_id', label: 'Staff ID', alignRight: false },
+  { id: 'userName', label: 'User Name', alignRight: false },
+  { id: 'userId', label: 'User ID', alignRight: false },
+  { id: 'staffName', label: 'Staff Name', alignRight: false },
+  { id: 'staffId', label: 'Staff ID', alignRight: false },
   { id: 'isApproved', label: 'Status', alignRight: false },
   { id: '' }
 ];
@@ -192,26 +192,26 @@ export default function BillList() {
                 />
                 <TableBody>
                   {filteredBills.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, datetime, user_name, user_id, staff_name, staff_id, isApproved } = row;
+                    const { id, datetime, user, staff } = row;
 
                     return (
                       <TableRow hover key={id} tabIndex={-1} role="checkbox">
                         <TableCell align="left">{id}</TableCell>
                         <TableCell align="left">{fDateTime(datetime)}</TableCell>
-                        <TableCell align="left">{user_name}</TableCell>
-                        <TableCell align="left">{user_id}</TableCell>
-                        <TableCell align="left">{staff_name}</TableCell>
-                        <TableCell align="left">{staff_id}</TableCell>
+                        <TableCell align="left">{user.name}</TableCell>
+                        <TableCell align="left">{user.id}</TableCell>
+                        <TableCell align="left">{staff?.name}</TableCell>
+                        <TableCell align="left">{staff?.id}</TableCell>
                         <TableCell align="left">
                           <Label
                             variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
-                            color={(isApproved && 'success') || 'warning'}
+                            color={(staff && 'success') || 'warning'}
                           >
-                            {isApproved ? 'Verified' : 'Pending'}
+                            {staff ? 'Verified' : 'Pending'}
                           </Label>
                         </TableCell>
                         <TableCell align="right">
-                          <MyCustomListMoreMenu onDetail={() => handleDetail(id, user_id, staff_id)} />
+                          <MyCustomListMoreMenu onDetail={() => handleDetail(id, user.id, staff?.id)} />
                         </TableCell>
                       </TableRow>
                     );

@@ -149,8 +149,8 @@ export default function MyBills() {
   };
 
   // bấm vào detail trên more menu
-  const handleDetail = (bill_id) => {
-    navigate(`${PATH_SALEPAGE.root}/my-bill-detail-list/billId/${bill_id}`);
+  const handleDetail = (billId) => {
+    navigate(`${PATH_SALEPAGE.root}/my-bill-detail-list/billId/${billId}`);
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - listData.length) : 0;
@@ -187,7 +187,7 @@ export default function MyBills() {
                 />
                 <TableBody>
                   {filteredMyBills.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, idx) => {
-                    const { bill_id, datetime, total, isApproved } = row;
+                    const { billId, datetime, total, isApproved } = row;
 
                     return (
                       <TableRow hover key={idx} tabIndex={-1} role="checkbox">
@@ -204,7 +204,7 @@ export default function MyBills() {
                         </TableCell>
 
                         <TableCell align="right">
-                          <MyCustomListMoreMenu onDetail={() => handleDetail(bill_id)} />
+                          <MyCustomListMoreMenu onDetail={() => handleDetail(billId)} />
                         </TableCell>
                       </TableRow>
                     );

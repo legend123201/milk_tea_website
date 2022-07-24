@@ -52,8 +52,10 @@ export default function CheckoutCart() {
 
   useEffect(() => {
     if (listData && listData.length > 0) {
-      const totalPrice = listData.reduce((total, item, index) => total + item.unit_sale_price * item.quantity, 0);
+      const totalPrice = listData.reduce((total, item, index) => total + item.product.unitSalePrice * item.quantity, 0);
       setTotal(totalPrice);
+    } else {
+      setTotal(0);
     }
   }, [listData]);
 

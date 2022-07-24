@@ -34,10 +34,10 @@ export default function MyCustomProductNewForm({ isEdit, currentMyCustomProduct 
 
   const NewMyCustomProductSchema = Yup.object().shape({
     name: Yup.string().required('Name is required').max(50),
-    quantity_in_stock: Yup.number().integer().required('Quantity in stock is required').min(1).max(9999999),
-    unit_perchase_price: Yup.number().integer().required('Unit perchase price is required').min(1).max(9999999),
-    unit_sale_price: Yup.number().integer().required('Unit sale price is required').min(1).max(9999999),
-    measure_unit: Yup.string().required('Measure unit is required').max(50),
+    quantityInStock: Yup.number().integer().required('Quantity in stock is required').min(1).max(9999999),
+    unitPerchasePrice: Yup.number().integer().required('Unit perchase price is required').min(1).max(9999999),
+    unitSalePrice: Yup.number().integer().required('Unit sale price is required').min(1).max(9999999),
+    measureUnit: Yup.string().required('Measure unit is required').max(50),
     image: Yup.mixed().required('Image is required')
   });
 
@@ -45,10 +45,10 @@ export default function MyCustomProductNewForm({ isEdit, currentMyCustomProduct 
     enableReinitialize: true,
     initialValues: {
       name: currentMyCustomProduct?.name || '',
-      quantity_in_stock: currentMyCustomProduct?.quantity_in_stock || '',
-      unit_perchase_price: currentMyCustomProduct?.unit_perchase_price || '',
-      unit_sale_price: currentMyCustomProduct?.unit_sale_price || '',
-      measure_unit: currentMyCustomProduct?.measure_unit || '',
+      quantityInStock: currentMyCustomProduct?.quantityInStock || '',
+      unitPerchasePrice: currentMyCustomProduct?.unitPerchasePrice || '',
+      unitSalePrice: currentMyCustomProduct?.unitSalePrice || '',
+      measureUnit: currentMyCustomProduct?.measureUnit || '',
       image: currentMyCustomProduct?.image || ''
     },
     validationSchema: NewMyCustomProductSchema,
@@ -156,9 +156,9 @@ export default function MyCustomProductNewForm({ isEdit, currentMyCustomProduct 
                   <TextField
                     fullWidth
                     label="Quantity in stock"
-                    {...getFieldProps('quantity_in_stock')}
-                    error={Boolean(touched.quantity_in_stock && errors.quantity_in_stock)}
-                    helperText={touched.quantity_in_stock && errors.quantity_in_stock}
+                    {...getFieldProps('quantityInStock')}
+                    error={Boolean(touched.quantityInStock && errors.quantityInStock)}
+                    helperText={touched.quantityInStock && errors.quantityInStock}
                   />
                 </Stack>
 
@@ -166,16 +166,16 @@ export default function MyCustomProductNewForm({ isEdit, currentMyCustomProduct 
                   <TextField
                     fullWidth
                     label="Unit perchase price"
-                    {...getFieldProps('unit_perchase_price')}
-                    error={Boolean(touched.unit_perchase_price && errors.unit_perchase_price)}
-                    helperText={touched.unit_perchase_price && errors.unit_perchase_price}
+                    {...getFieldProps('unitPerchasePrice')}
+                    error={Boolean(touched.unitPerchasePrice && errors.unitPerchasePrice)}
+                    helperText={touched.unitPerchasePrice && errors.unitPerchasePrice}
                   />
                   <TextField
                     fullWidth
                     label="Unit sale price"
-                    {...getFieldProps('unit_sale_price')}
-                    error={Boolean(touched.unit_sale_price && errors.unit_sale_price)}
-                    helperText={touched.unit_sale_price && errors.unit_sale_price}
+                    {...getFieldProps('unitSalePrice')}
+                    error={Boolean(touched.unitSalePrice && errors.unitSalePrice)}
+                    helperText={touched.unitSalePrice && errors.unitSalePrice}
                   />
                 </Stack>
 
@@ -183,9 +183,9 @@ export default function MyCustomProductNewForm({ isEdit, currentMyCustomProduct 
                   <TextField
                     fullWidth
                     label="Measure unit"
-                    {...getFieldProps('measure_unit')}
-                    error={Boolean(touched.measure_unit && errors.measure_unit)}
-                    helperText={touched.measure_unit && errors.measure_unit}
+                    {...getFieldProps('measureUnit')}
+                    error={Boolean(touched.measureUnit && errors.measureUnit)}
+                    helperText={touched.measureUnit && errors.measureUnit}
                   />
                 </Stack>
 

@@ -85,10 +85,7 @@ export default function CheckoutCart() {
 
   useEffect(() => {
     if (listData && listData.length > 0) {
-      const totalPrice = listData.reduce(
-        (total, item, index) => total + item.current_unit_sale_price * item.quantity,
-        0
-      );
+      const totalPrice = listData.reduce((total, item, index) => total + item.currentUnitSalePrice * item.quantity, 0);
       setTotal(totalPrice);
     }
   }, [listData]);
@@ -108,9 +105,9 @@ export default function CheckoutCart() {
         />
         <Card sx={{ mb: 3, p: 3 }}>
           <Typography variant="h3">Bill information</Typography>
-          {listData[0] && console.log(listData[0].datetime)}
+          {console.log(listData)}
           <Typography variant="body1" sx={{ mt: 2 }}>
-            Date: {listData[0] && fDateTime(listData[0].datetime)}
+            Date: {listData[0] && fDateTime(listData[0].bill.datetime)}
           </Typography>
           <Typography variant="body1" sx={{ mt: 2 }}>
             Total: {fCurrency(total)}
@@ -144,25 +141,25 @@ export default function CheckoutCart() {
 
                 <TableBody>
                   {listData.map((item) => {
-                    const { product_id, quantity, name, current_unit_sale_price, measure_unit, image } = item;
+                    const { product, quantity, currentUnitSalePrice } = item;
                     return (
-                      <TableRow key={product_id}>
+                      <TableRow key={product.id}>
                         <TableCell>
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <ThumbImgStyle alt="product image" src={image} />
+                            <ThumbImgStyle alt="product image" src={product.image} />
                             <Box>
                               <Typography noWrap variant="subtitle2" sx={{ maxWidth: 240, mb: 0.5 }}>
-                                {name}
+                                {product.name}
                               </Typography>
                             </Box>
                           </Box>
                         </TableCell>
 
-                        <TableCell align="left">{fCurrency(current_unit_sale_price)}</TableCell>
+                        <TableCell align="left">{fCurrency(currentUnitSalePrice)}</TableCell>
 
                         <TableCell align="left">{quantity}</TableCell>
 
-                        <TableCell align="right">{fCurrency(current_unit_sale_price * quantity)}</TableCell>
+                        <TableCell align="right">{fCurrency(currentUnitSalePrice * quantity)}</TableCell>
                       </TableRow>
                     );
                   })}

@@ -32,7 +32,7 @@ import { fCurrency, fNumber } from '../../utils/formatNumber';
 
 // redux
 import { useDispatch, useSelector } from '../../redux/store';
-import { getImportOrderDetailListById } from '../../redux/slices/importOrderDetail';
+import { getImportOrderDetailListByImportOrderId } from '../../redux/slices/importOrderDetail';
 import { addImportOrder } from '../../redux/slices/importOrder';
 import { getStaff } from '../../redux/slices/staff';
 // routes
@@ -56,10 +56,10 @@ import MyCustomAlertDialog from '../../components/MyCustomAlertDialog';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'product_id', label: 'Product ID', alignRight: false },
+  { id: 'productId', label: 'Product ID', alignRight: false },
   { id: 'name', label: 'Name', alignRight: false },
   { id: 'quantity', label: 'Quantity', alignRight: false },
-  { id: 'current_unit_perchase_price', label: 'Current unit perchase price (vnd)', alignRight: false },
+  { id: 'currentUnitPerchasePrice', label: 'Current unit perchase price (vnd)', alignRight: false },
   { id: '' }
 ];
 
@@ -89,7 +89,8 @@ function applySortFilter(array, comparator, query) {
     // filter bằng hàm filter có sẵn có lodash, lodash mặc định xếp chữ tăng dần theo alphabet, indexOf mà khác -1 nghĩa là có tìm thấy
     return filter(
       array,
-      (_importOrderDetail) => _importOrderDetail.name.toString().toLowerCase().indexOf(query.toLowerCase()) !== -1
+      (_importOrderDetail) =>
+        _importOrderDetail.product.name.toString().toLowerCase().indexOf(query.toLowerCase()) !== -1
     );
   }
 
@@ -188,7 +189,7 @@ export default function ImportOrderDetailList() {
   // khởi tạo mảng listData, nếu như đang xem detail thì lấy danh sách từ api về, ko thì là rỗng
   useEffect(() => {
     if (isDetail) {
-      dispatch(getImportOrderDetailListById(id, excuteAfterGetList));
+      dispatch(getImportOrderDetailListByImportOrderId(id, excuteAfterGetList));
     } else {
       setListData([]);
     }
@@ -205,7 +206,7 @@ export default function ImportOrderDetailList() {
 
   useEffect(() => {
     const newTotal = listData.reduce(
-      (total, value, index) => total + value.quantity * value.current_unit_perchase_price,
+      (total, value, index) => total + value.quantity * value.currentUnitPerchasePrice,
       0
     );
     setTotalOfOrder(newTotal);
@@ -234,7 +235,7 @@ export default function ImportOrderDetailList() {
 
   // bấm vào delete trên more menu
   const handleDelete = (id) => {
-    setListData(listData.filter((item) => Number(item.product_id) !== Number(id)));
+    setListData(listData.filter((item) => Number(item.product.id) !== Number(id)));
     const variant = 'success';
     // variant could be success, error, warning, info, or default
     enqueueSnackbar('Delete success', { variant });
@@ -242,7 +243,7 @@ export default function ImportOrderDetailList() {
 
   // ktra có trùng product trong danh sách ko
   const isDuplicateProduct = (detail) => {
-    const duplicateProduct = listData.find((item) => Number(item.product_id) === Number(detail.product_id));
+    const duplicateProduct = listData.find((item) => Number(item.product.id) === Number(detail.productId));
     if (duplicateProduct) {
       return true;
     }
@@ -251,7 +252,15 @@ export default function ImportOrderDetailList() {
 
   // thêm detail vào danh sách
   const handleAddDetail = (newImportOrderDetail) => {
-    setListData([...listData, newImportOrderDetail]);
+    const formatForApi = {
+      quantity: newImportOrderDetail.quantity,
+      currentUnitPerchasePrice: newImportOrderDetail.currentUnitPerchasePrice,
+      product: {
+        id: newImportOrderDetail.productId,
+        name: newImportOrderDetail.name
+      }
+    };
+    setListData([...listData, formatForApi]);
   };
 
   const handleSubmitOrder = () => {
@@ -343,16 +352,16 @@ export default function ImportOrderDetailList() {
                       {filteredImportOrderDetails
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((row) => {
-                          const { product_id, name, quantity, current_unit_perchase_price } = row;
+                          const { product, quantity, currentUnitPerchasePrice } = row;
 
                           return (
-                            <TableRow hover key={product_id} tabIndex={-1} role="checkbox">
-                              <TableCell align="left">{product_id}</TableCell>
-                              <TableCell align="left">{name}</TableCell>
+                            <TableRow hover key={product.id} tabIndex={-1} role="checkbox">
+                              <TableCell align="left">{product.id}</TableCell>
+                              <TableCell align="left">{product.name}</TableCell>
                               <TableCell align="left">{fNumber(quantity)}</TableCell>
-                              <TableCell align="left">{fNumber(current_unit_perchase_price)}</TableCell>
+                              <TableCell align="left">{fNumber(currentUnitPerchasePrice)}</TableCell>
                               <TableCell align="right">
-                                {!isDetail && <MyCustomListMoreMenu onDelete={() => handleDelete(product_id)} />}
+                                {!isDetail && <MyCustomListMoreMenu onDelete={() => handleDelete(product.id)} />}
                               </TableCell>
                             </TableRow>
                           );

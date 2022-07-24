@@ -48,7 +48,7 @@ export function getBillDetailListById(billId, myCallBack) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get(`/billDetails/ ${billId}`);
+      const response = await axios.get(`/billDetails/billId/${billId}`);
       dispatch(slice.actions.getBillDetailListByIdSuccess(response.data.data));
     } catch (e) {
       console.log(e);

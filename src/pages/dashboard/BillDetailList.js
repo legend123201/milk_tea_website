@@ -53,10 +53,10 @@ import {
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'product_id', label: 'Product ID', alignRight: false },
+  { id: 'productId', label: 'Product ID', alignRight: false },
   { id: 'name', label: 'Name', alignRight: false },
   { id: 'quantity', label: 'Quantity', alignRight: false },
-  { id: 'current_unit_sale_price', label: 'Current unit sale price (vnd)', alignRight: false }
+  { id: 'currentUnitSalePrice', label: 'Current unit sale price (vnd)', alignRight: false }
 ];
 
 // ----------------------------------------------------------------------
@@ -85,7 +85,7 @@ function applySortFilter(array, comparator, query) {
     // filter bằng hàm filter có sẵn có lodash, lodash mặc định xếp chữ tăng dần theo alphabet, indexOf mà khác -1 nghĩa là có tìm thấy
     return filter(
       array,
-      (_billDetail) => _billDetail.product_id.toString().toLowerCase().indexOf(query.toString().toLowerCase()) !== -1
+      (_billDetail) => _billDetail.product.id.toString().toLowerCase().indexOf(query.toString().toLowerCase()) !== -1
     );
   }
 
@@ -170,10 +170,7 @@ export default function BillDetailList() {
   }, []);
 
   useEffect(() => {
-    const newTotal = listData.reduce(
-      (total, value, index) => total + value.quantity * value.current_unit_sale_price,
-      0
-    );
+    const newTotal = listData.reduce((total, value, index) => total + value.quantity * value.currentUnitSalePrice, 0);
     setTotalOfOrder(newTotal);
   }, [listData]);
 
@@ -286,14 +283,14 @@ export default function BillDetailList() {
                     />
                     <TableBody>
                       {filteredBillDetails.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                        const { product_id, name, quantity, current_unit_sale_price } = row;
+                        const { product, quantity, currentUnitSalePrice } = row;
 
                         return (
-                          <TableRow hover key={product_id} tabIndex={-1} role="checkbox">
-                            <TableCell align="left">{product_id}</TableCell>
-                            <TableCell align="left">{name}</TableCell>
+                          <TableRow hover key={product.id} tabIndex={-1} role="checkbox">
+                            <TableCell align="left">{product.id}</TableCell>
+                            <TableCell align="left">{product.name}</TableCell>
                             <TableCell align="left">{fNumber(quantity)}</TableCell>
-                            <TableCell align="left">{fNumber(current_unit_sale_price)}</TableCell>
+                            <TableCell align="left">{fNumber(currentUnitSalePrice)}</TableCell>
                           </TableRow>
                         );
                       })}

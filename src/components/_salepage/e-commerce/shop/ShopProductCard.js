@@ -35,7 +35,7 @@ ShopProductCard.propTypes = {
 };
 
 export default function ShopProductCard({ product }) {
-  const { id, name, image, unit_sale_price, measure_unit } = product;
+  const { id, name, image, unitSalePrice, measureUnit } = product;
   const linkTo = `${PATH_SALEPAGE.root}/product/${id}`;
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
@@ -49,12 +49,14 @@ export default function ShopProductCard({ product }) {
 
   useEffect(() => {
     if (listCart && listCart.length > 0) {
-      const currentProductIsAdded = listCart.find((item) => item.product_id === Number(id));
+      const currentProductIsAdded = listCart.find((item) => item.product.id === Number(id));
       if (currentProductIsAdded) {
         setIsAlreadyInCart(true);
       } else {
         setIsAlreadyInCart(false);
       }
+    } else {
+      setIsAlreadyInCart(false);
     }
   }, [listCart]);
 
@@ -114,8 +116,8 @@ export default function ShopProductCard({ product }) {
       dispatch(deleteCart(user.id, id, excuteAfterDeleteCart));
     } else {
       const newCart = {
-        user_id: user.id,
-        product_id: id,
+        userId: user.id,
+        productId: id,
         quantity: 1
       };
 
@@ -155,7 +157,7 @@ export default function ShopProductCard({ product }) {
 
           <Typography variant="subtitle1">
             &nbsp;
-            {fNumber(unit_sale_price)} vnd / {measure_unit}
+            {fNumber(unitSalePrice)} vnd / {measureUnit}
           </Typography>
         </Stack>
       </Stack>

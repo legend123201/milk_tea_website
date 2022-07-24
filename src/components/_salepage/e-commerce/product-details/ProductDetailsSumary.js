@@ -111,7 +111,7 @@ export default function ProductDetailsSumary({ product, isEditCart }) {
   const { enqueueSnackbar } = useSnackbar();
   const user = useSelector((state) => state.myCustomUser.data);
 
-  const { id, name, quantity_in_stock, unit_perchase_price, unit_sale_price, measure_unit, image } = product;
+  const { id, name, quantityInStock, unitPerchasePrice, unitSalePrice, measureUnit, image } = product;
 
   const loadBackCartList = () => {
     const excuteAfterGetList = (globalStateNewest) => {
@@ -129,7 +129,7 @@ export default function ProductDetailsSumary({ product, isEditCart }) {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      quantity: quantity_in_stock < 1 ? 0 : 1
+      quantity: quantityInStock < 1 ? 0 : 1
     },
     onSubmit: async (values, { setSubmitting }) => {
       try {
@@ -154,16 +154,16 @@ export default function ProductDetailsSumary({ product, isEditCart }) {
         if (user) {
           if (!isEditCart) {
             const newCart = {
-              user_id: user.id,
-              product_id: id,
+              userId: user.id,
+              productId: id,
               quantity: values.quantity
             };
 
             dispatch(addCart(newCart, excuteAfterCallApiCart));
           } else {
             const putCart = {
-              user_id: user.id,
-              product_id: id,
+              userId: user.id,
+              productId: id,
               quantity: values.quantity
             };
 
@@ -193,7 +193,7 @@ export default function ProductDetailsSumary({ product, isEditCart }) {
           </Typography>
 
           <Typography variant="h3" sx={{ mb: 3 }}>
-            &nbsp;{fCurrency(unit_sale_price)}&nbsp;/&nbsp;{measure_unit}
+            &nbsp;{fCurrency(unitSalePrice)}&nbsp;/&nbsp;{measureUnit}
           </Typography>
 
           <Divider sx={{ borderStyle: 'dashed' }} />
@@ -204,7 +204,7 @@ export default function ProductDetailsSumary({ product, isEditCart }) {
                 Quantity
               </Typography>
               <div>
-                <Incrementer name="quantity" available={quantity_in_stock} />
+                <Incrementer name="quantity" available={quantityInStock} />
                 <Typography
                   variant="caption"
                   sx={{
@@ -214,7 +214,7 @@ export default function ProductDetailsSumary({ product, isEditCart }) {
                     color: 'text.secondary'
                   }}
                 >
-                  Available: {quantity_in_stock}&nbsp;{measure_unit}
+                  Available: {quantityInStock}&nbsp;{measureUnit}
                 </Typography>
 
                 <FormHelperText error>{touched.quantity && errors.quantity}</FormHelperText>

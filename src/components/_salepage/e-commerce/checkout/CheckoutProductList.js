@@ -140,8 +140,8 @@ export default function ProductList({ listCart }) {
 
   const handleIncreaseQuantity = (productId, inCartQuantity) => {
     const putCart = {
-      user_id: currentUser.id,
-      product_id: productId,
+      userId: currentUser.id,
+      productId,
       quantity: inCartQuantity + 1
     };
 
@@ -150,8 +150,8 @@ export default function ProductList({ listCart }) {
 
   const handleDecreaseQuantity = (productId, inCartQuantity) => {
     const putCart = {
-      user_id: currentUser.id,
-      product_id: productId,
+      userId: currentUser.id,
+      productId,
       quantity: inCartQuantity - 1
     };
 
@@ -174,38 +174,38 @@ export default function ProductList({ listCart }) {
 
         <TableBody>
           {listCart.map((item) => {
-            const { product_id, quantity, name, unit_sale_price, measure_unit, image, quantity_in_stock } = item;
+            const { product, quantity } = item;
             return (
-              <TableRow key={product_id}>
+              <TableRow key={product.id}>
                 <TableCell>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <ThumbImgStyle alt="product image" src={image} />
+                    <ThumbImgStyle alt="product image" src={product.image} />
                     <Box>
                       <Typography noWrap variant="subtitle2" sx={{ maxWidth: 240, mb: 0.5 }}>
-                        {name}
+                        {product.name}
                       </Typography>
                     </Box>
                   </Box>
                 </TableCell>
 
-                <TableCell align="left">{fCurrency(unit_sale_price)}</TableCell>
+                <TableCell align="left">{fCurrency(product.unitSalePrice)}</TableCell>
 
                 {/* <TableCell align="left">{quantity}</TableCell> */}
                 <TableCell align="left">
                   <Incrementer
                     quantity={quantity}
-                    available={quantity_in_stock}
-                    onDecrease={() => handleDecreaseQuantity(product_id, quantity)}
-                    onIncrease={() => handleIncreaseQuantity(product_id, quantity)}
+                    available={product.quantityInStock}
+                    onDecrease={() => handleDecreaseQuantity(product.id, quantity)}
+                    onIncrease={() => handleIncreaseQuantity(product.id, quantity)}
                   />
                 </TableCell>
 
-                <TableCell align="right">{fCurrency(unit_sale_price * quantity)}</TableCell>
+                <TableCell align="right">{fCurrency(product.unitSalePrice * quantity)}</TableCell>
 
                 <TableCell align="right">
                   <MIconButton
                     onClick={() => {
-                      navigate(`${PATH_SALEPAGE.root}/product/${product_id}`);
+                      navigate(`${PATH_SALEPAGE.root}/product/${product.id}`);
                     }}
                   >
                     <Icon icon={editFill} width={20} height={20} />
@@ -213,7 +213,7 @@ export default function ProductList({ listCart }) {
                 </TableCell>
 
                 <TableCell>
-                  <MIconButton onClick={() => handleDelateCart(product_id)}>
+                  <MIconButton onClick={() => handleDelateCart(product.id)}>
                     <Icon icon={trash2Fill} width={20} height={20} />
                   </MIconButton>
                 </TableCell>

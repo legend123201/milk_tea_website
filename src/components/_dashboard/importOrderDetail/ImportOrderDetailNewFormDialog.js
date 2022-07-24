@@ -52,18 +52,18 @@ export default function ImportOrderDetailNewFormDialog({ open, handleCloseDialog
   }, [dispatch]);
 
   const ImportOrderDetailSchema = Yup.object().shape({
-    product_id: Yup.number().required('Product ID is required'),
+    productId: Yup.number().required('Product ID is required'),
     quantity: Yup.number().integer().required('Quantity is required').min(1).max(9999999),
-    current_unit_perchase_price: Yup.number().integer().required('Current unit perchase price is required').min(1),
+    currentUnitPerchasePrice: Yup.number().integer().required('Current unit perchase price is required').min(1),
     name: Yup.string().required('Name is required')
   });
 
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      product_id: '',
+      productId: '',
       quantity: '',
-      current_unit_perchase_price: '',
+      currentUnitPerchasePrice: '',
       name: ''
     },
     validationSchema: ImportOrderDetailSchema,
@@ -99,10 +99,10 @@ export default function ImportOrderDetailNewFormDialog({ open, handleCloseDialog
     if (e.target.value) {
       const currentProductId = e.target.value;
       const currentProduct = listData.find((item) => Number(item.id) === Number(currentProductId));
-      setFieldValue('current_unit_perchase_price', currentProduct.unit_perchase_price.toString());
+      setFieldValue('currentUnitPerchasePrice', currentProduct.unitPerchasePrice.toString());
       setFieldValue('name', currentProduct.name.toString());
     } else {
-      setFieldValue('current_unit_perchase_price', '');
+      setFieldValue('currentUnitPerchasePrice', '');
       setFieldValue('name', '');
     }
   };
@@ -124,10 +124,10 @@ export default function ImportOrderDetailNewFormDialog({ open, handleCloseDialog
                         fullWidth
                         label="Product ID"
                         placeholder="Product ID"
-                        {...getFieldProps('product_id')}
+                        {...getFieldProps('productId')}
                         SelectProps={{ native: true }}
-                        error={Boolean(touched.product_id && errors.product_id)}
-                        helperText={touched.product_id && errors.product_id}
+                        error={Boolean(touched.productId && errors.productId)}
+                        helperText={touched.productId && errors.productId}
                         onClick={handleOnClick}
                       >
                         <option value="" />

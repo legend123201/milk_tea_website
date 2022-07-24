@@ -35,7 +35,7 @@ const slice = createSlice({
       state.listData = action.payload;
     },
 
-    // GET BILLS BY USER_ID
+    // GET BILLS BY userId
     getBillListByUserIdSuccess(state, action) {
       state.isLoading = false;
       state.isSuccess = true;
@@ -82,7 +82,7 @@ export function getBillListByUserId(userId, myCallBack) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get(`/bills/salepage/userId/${userId}`);
+      const response = await axios.get(`/bills/userId/${userId}`);
       dispatch(slice.actions.getBillListByUserIdSuccess(response.data.data));
     } catch (e) {
       console.log(e);
@@ -98,7 +98,7 @@ export function addBill(userId, myCallBack) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get(`/bills/userId/${userId}`);
+      const response = await axios.post(`/bills/userId/${userId}`);
       dispatch(slice.actions.addBillSuccess());
     } catch (e) {
       console.log(e);

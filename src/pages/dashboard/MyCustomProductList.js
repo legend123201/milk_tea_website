@@ -51,10 +51,10 @@ import {
 const TABLE_HEAD = [
   { id: 'id', label: 'ID', alignRight: false },
   { id: 'name', label: 'Name', alignRight: false },
-  { id: 'quantity_in_stock', label: 'Quantity in stock', alignRight: true },
-  { id: 'unit_perchase_price', label: 'Unit perchase price (vnd)', alignRight: true },
-  { id: 'unit_sale_price', label: 'Unit sale price (vnd)', alignRight: true },
-  { id: 'measure_unit', label: 'Measure unit', alignRight: true },
+  { id: 'quantityInStock', label: 'Quantity in stock', alignRight: true },
+  { id: 'unitPerchasePrice', label: 'Unit perchase price (vnd)', alignRight: true },
+  { id: 'unitSalePrice', label: 'Unit sale price (vnd)', alignRight: true },
+  { id: 'measureUnit', label: 'Measure unit', alignRight: true },
   { id: '' }
 ];
 
@@ -232,8 +232,7 @@ export default function MyCustomProductList() {
                 />
                 <TableBody>
                   {filteredMyCustomProducts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name, quantity_in_stock, unit_perchase_price, unit_sale_price, measure_unit, image } =
-                      row;
+                    const { id, name, quantityInStock, unitPerchasePrice, unitSalePrice, measureUnit, image } = row;
 
                     return (
                       <TableRow hover key={id} tabIndex={-1} role="checkbox">
@@ -252,10 +251,10 @@ export default function MyCustomProductList() {
                             </Typography>
                           </Box>
                         </TableCell>
-                        <TableCell align="right">{fNumber(quantity_in_stock)}</TableCell>
-                        <TableCell align="right">{fNumber(unit_perchase_price)}</TableCell>
-                        <TableCell align="right">{fNumber(unit_sale_price)}</TableCell>
-                        <TableCell align="right">{measure_unit}</TableCell>
+                        <TableCell align="right">{fNumber(quantityInStock)}</TableCell>
+                        <TableCell align="right">{fNumber(unitPerchasePrice)}</TableCell>
+                        <TableCell align="right">{fNumber(unitSalePrice)}</TableCell>
+                        <TableCell align="right">{measureUnit}</TableCell>
 
                         <TableCell align="right">
                           <MyCustomListMoreMenu onDelete={() => handleDelete(id)} onEdit={() => handleEdit(id)} />

@@ -65,7 +65,7 @@ export function getTotalUser(myCallBack) {
     try {
       const response = await axios.get(`/analytics/user`);
       console.log(response);
-      dispatch(slice.actions.getTotalUserSuccess(response.data.data[0].totalUser));
+      dispatch(slice.actions.getTotalUserSuccess(response.data.data));
     } catch (e) {
       console.log(e);
       const messageError = e.message ? e.message : defaultErrorString + e.toString();
@@ -81,7 +81,7 @@ export function getTotalBill(myCallBack) {
     dispatch(slice.actions.startLoading());
     try {
       const response = await axios.get(`/analytics/bill`);
-      dispatch(slice.actions.getTotalBillSuccess(response.data.data[0].totalBill));
+      dispatch(slice.actions.getTotalBillSuccess(response.data.data));
     } catch (e) {
       console.log(e);
       const messageError = e.message ? e.message : defaultErrorString + e.toString();
