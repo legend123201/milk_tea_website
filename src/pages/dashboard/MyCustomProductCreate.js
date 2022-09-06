@@ -7,6 +7,7 @@ import { Container } from '@mui/material';
 // redux
 import { useDispatch, useSelector } from '../../redux/store';
 import { getMyCustomProduct } from '../../redux/slices/myCustomProduct';
+import { getCategoryList } from 'src/redux/slices/category';
 // routes
 import { PATH_DASHBOARD } from '../../routes/paths';
 // hooks
@@ -36,10 +37,23 @@ export default function MyCustomProductCreate() {
     }
   };
 
+  const excuteAfterGetListCategory = (globalStateNewest) => {
+    const stateCategory = globalStateNewest.category;
+    if (!stateCategory.isSuccess) {
+      const variant = 'error';
+      // variant could be success, error, warning, info, or default
+      enqueueSnackbar(stateCategory.errorMessage, { variant });
+    }
+  };
+
   useEffect(() => {
     if (isEdit && id) {
       dispatch(getMyCustomProduct(id, excuteAfterGetItem));
     }
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getCategoryList(excuteAfterGetListCategory));
   }, [dispatch]);
 
   return (

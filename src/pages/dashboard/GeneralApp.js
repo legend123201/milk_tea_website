@@ -7,7 +7,9 @@ import useAuth from '../../hooks/useAuth';
 import useSettings from '../../hooks/useSettings';
 // redux
 import { useDispatch } from '../../redux/store';
-import { getListRevenueByMonth, getTotalBill, getTotalUser } from '../../redux/slices/analytic';
+import { getListRevenueByMonth, getListProfitByMonth, getTotalBill, getTotalUser } from '../../redux/slices/analytic';
+import { getImportOrderListForReport } from '../../redux/slices/importOrder';
+import { getBillListForReport } from '../../redux/slices/bill';
 // components
 import Page from '../../components/Page';
 import {
@@ -43,10 +45,31 @@ export default function GeneralApp() {
     }
   };
 
+  const excuteAfterGetBillListForReport = (globalStateNewest) => {
+    const stateBill = globalStateNewest.bill;
+    if (!stateBill.isSuccess) {
+      const variant = 'error';
+      // variant could be success, error, warning, info, or default
+      enqueueSnackbar(stateBill.errorMessage, { variant });
+    }
+  };
+
+  const excuteAfterGetImportOrderListForReport = (globalStateNewest) => {
+    const stateImportOrder = globalStateNewest.importOrder;
+    if (!stateImportOrder.isSuccess) {
+      const variant = 'error';
+      // variant could be success, error, warning, info, or default
+      enqueueSnackbar(stateImportOrder.errorMessage, { variant });
+    }
+  };
+
   useEffect(() => {
     dispatch(getTotalUser(excuteAfterGetAnalytic));
     dispatch(getTotalBill(excuteAfterGetAnalytic));
     dispatch(getListRevenueByMonth(excuteAfterGetAnalytic));
+    dispatch(getListProfitByMonth(excuteAfterGetAnalytic));
+    dispatch(getBillListForReport(excuteAfterGetBillListForReport));
+    dispatch(getImportOrderListForReport(excuteAfterGetImportOrderListForReport));
   }, [dispatch]);
 
   return (

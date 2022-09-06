@@ -20,7 +20,11 @@ import {
 // redux
 import { useDispatch, useSelector } from '../../redux/store';
 import { getProducts, filterProducts } from '../../redux/slices/product';
-import { getMyCustomProductList } from '../../redux/slices/myCustomProduct';
+import {
+  getMyCustomProductList,
+  getNewestMyCustomProductList,
+  getBestSellingMyCustomProductList
+} from '../../redux/slices/myCustomProduct';
 import { getCartList } from '../../redux/slices/cart';
 // routes
 import { PATH_DASHBOARD } from '../../routes/paths';
@@ -57,7 +61,7 @@ const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
 export default function EcommerceShop() {
   const { themeStretch } = useSettings();
   const dispatch = useDispatch();
-  const { listData, isLoading } = useSelector((state) => state.myCustomProduct);
+  const { listData, listNewestData, listBestSellingData, isLoading } = useSelector((state) => state.myCustomProduct);
   const currentUser = useSelector((state) => state.myCustomUser.data);
   const { enqueueSnackbar } = useSnackbar();
   const [listDataFiltered, setListDataFiltered] = useState([]);
@@ -79,6 +83,34 @@ export default function EcommerceShop() {
     };
 
     dispatch(getMyCustomProductList(excuteAfterGetList));
+  }, [dispatch]);
+
+  // fetch newest item list
+  useEffect(() => {
+    const excuteAfterGetList = (globalStateNewest) => {
+      const stateMyCustomProduct = globalStateNewest.myCustomProduct;
+      if (!stateMyCustomProduct.isSuccess) {
+        const variant = 'error';
+        // variant could be success, error, warning, info, or default
+        enqueueSnackbar(stateMyCustomProduct.errorMessage, { variant });
+      }
+    };
+
+    dispatch(getNewestMyCustomProductList(excuteAfterGetList));
+  }, [dispatch]);
+
+  // fetch best selling item list
+  useEffect(() => {
+    const excuteAfterGetList = (globalStateNewest) => {
+      const stateMyCustomProduct = globalStateNewest.myCustomProduct;
+      if (!stateMyCustomProduct.isSuccess) {
+        const variant = 'error';
+        // variant could be success, error, warning, info, or default
+        enqueueSnackbar(stateMyCustomProduct.errorMessage, { variant });
+      }
+    };
+
+    dispatch(getBestSellingMyCustomProductList(excuteAfterGetList));
   }, [dispatch]);
 
   // fetch list item in cart
@@ -111,6 +143,41 @@ export default function EcommerceShop() {
     <Page title="Ecommerce: Shop | Minimal-UI">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs heading="Shop" links={[{ name: 'Shop' }]} />
+
+        {/* Newest Products */}
+        <Typography variant="h3" sx={{ textAlign: 'center' }}>
+          New Products
+        </Typography>
+
+        <Box sx={{ mt: 2 }}>
+          {listNewestData.length > 0 ? (
+            <ShopProductList products={listNewestData} isLoad={isLoading} />
+          ) : (
+            <Typography variant="body1" sx={{ textAlign: 'center' }}>
+              No item found!
+            </Typography>
+          )}
+        </Box>
+
+        {/* Best selling Products */}
+        <Typography variant="h3" sx={{ textAlign: 'center', mt: 10 }}>
+          Best selling
+        </Typography>
+
+        <Box sx={{ mt: 2 }}>
+          {listBestSellingData.length > 0 ? (
+            <ShopProductList products={listBestSellingData} isLoad={isLoading} />
+          ) : (
+            <Typography variant="body1" sx={{ textAlign: 'center' }}>
+              No item found!
+            </Typography>
+          )}
+        </Box>
+
+        {/* All Products */}
+        <Typography variant="h3" sx={{ textAlign: 'center', mt: 10, mb: 5 }}>
+          All Products
+        </Typography>
 
         <SearchStyle
           value={searchValue}

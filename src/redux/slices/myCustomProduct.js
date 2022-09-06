@@ -7,6 +7,8 @@ import axios from '../../utils/myCustomAxios';
 
 const initialState = {
   listData: [],
+  listNewestData: [],
+  listBestSellingData: [],
   data: null,
   isLoading: false,
   isSuccess: null,
@@ -34,6 +36,20 @@ const slice = createSlice({
       state.isLoading = false;
       state.isSuccess = true;
       state.listData = action.payload;
+    },
+
+    // GET NEWEST PRODUCTS
+    getNewestMyCustomProductListSuccess(state, action) {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.listNewestData = action.payload;
+    },
+
+    // GET BEST SELLING PRODUCTS
+    getBestSellingMyCustomProductListSuccess(state, action) {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.listBestSellingData = action.payload;
     },
 
     // GET PRODUCT
@@ -86,6 +102,38 @@ export function getMyCustomProductList(myCallBack) {
   };
 }
 
+export function getNewestMyCustomProductList(myCallBack) {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await axios.get('/products/newest');
+      dispatch(slice.actions.getNewestMyCustomProductListSuccess(response.data.data));
+    } catch (e) {
+      console.log(e);
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
+      dispatch(slice.actions.hasError(messageError));
+    } finally {
+      if (myCallBack) myCallBack(getState());
+    }
+  };
+}
+
+export function getBestSellingMyCustomProductList(myCallBack) {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await axios.get('/products/bestselling');
+      dispatch(slice.actions.getBestSellingMyCustomProductListSuccess(response.data.data));
+    } catch (e) {
+      console.log(e);
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
+      dispatch(slice.actions.hasError(messageError));
+    } finally {
+      if (myCallBack) myCallBack(getState());
+    }
+  };
+}
+
 export function getMyCustomProduct(id, myCallBack) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.startLoading());
@@ -106,7 +154,13 @@ export function addMyCustomProduct(newMyCustomProduct, myCallBack) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.post('/products', newMyCustomProduct);
+      const body = {
+        ...newMyCustomProduct,
+        category: {
+          id: newMyCustomProduct.categoryId
+        }
+      };
+      const response = await axios.post('/products', body);
       dispatch(slice.actions.addMyCustomProductSuccess());
     } catch (e) {
       const messageError = e.message ? e.message : defaultErrorString + e.toString();
@@ -136,7 +190,13 @@ export function editMyCustomProduct(editMyCustomProduct, myCallBack) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.put(`/products/${editMyCustomProduct.id}`, editMyCustomProduct);
+      const body = {
+        ...editMyCustomProduct,
+        category: {
+          id: editMyCustomProduct.categoryId
+        }
+      };
+      const response = await axios.put(`/products/${editMyCustomProduct.id}`, body);
       dispatch(slice.actions.editMyCustomProductSuccess());
     } catch (e) {
       const messageError = e.message ? e.message : defaultErrorString + e.toString();

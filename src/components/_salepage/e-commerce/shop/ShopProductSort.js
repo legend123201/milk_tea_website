@@ -14,7 +14,10 @@ import { sortByProducts } from '../../../../redux/slices/product';
 const SORT_BY_OPTIONS = [
   { value: 'all', label: 'All item' },
   { value: 'priceDesc', label: 'Price: High-Low' },
-  { value: 'priceAsc', label: 'Price: Low-High' }
+  { value: 'priceAsc', label: 'Price: Low-High' },
+  { value: 'Vegetable', label: 'Vegetable' },
+  { value: 'Fruit', label: 'Fruit' },
+  { value: 'Meat', label: 'Meat' }
 ];
 
 function renderLabel(label) {
@@ -62,7 +65,7 @@ export default function ShopProductSort({ products, setListDataFiltered }) {
           return 0;
         })
       );
-    } else {
+    } else if (value === 'priceAsc') {
       setListDataFiltered(
         [...products].sort((a, b) => {
           if (a.unitSalePrice < b.unitSalePrice) {
@@ -74,6 +77,12 @@ export default function ShopProductSort({ products, setListDataFiltered }) {
           return 0;
         })
       );
+    } else if (value === 'Vegetable') {
+      setListDataFiltered([...products].filter((a) => a.category.name === 'Vegetable'));
+    } else if (value === 'Fruit') {
+      setListDataFiltered([...products].filter((a) => a.category.name === 'Fruit'));
+    } else if (value === 'Meat') {
+      setListDataFiltered([...products].filter((a) => a.category.name === 'Meat'));
     }
   };
 

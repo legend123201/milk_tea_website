@@ -31,6 +31,7 @@ export default function MyCustomProductNewForm({ isEdit, currentMyCustomProduct 
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
+  const listCategory = useSelector((state) => state.category.listData);
 
   const NewMyCustomProductSchema = Yup.object().shape({
     name: Yup.string().required('Name is required').max(50),
@@ -38,6 +39,7 @@ export default function MyCustomProductNewForm({ isEdit, currentMyCustomProduct 
     unitPerchasePrice: Yup.number().integer().required('Unit perchase price is required').min(1).max(9999999),
     unitSalePrice: Yup.number().integer().required('Unit sale price is required').min(1).max(9999999),
     measureUnit: Yup.string().required('Measure unit is required').max(50),
+    categoryId: Yup.number().required('Category ID is required'),
     image: Yup.mixed().required('Image is required')
   });
 
@@ -49,6 +51,7 @@ export default function MyCustomProductNewForm({ isEdit, currentMyCustomProduct 
       unitPerchasePrice: currentMyCustomProduct?.unitPerchasePrice || '',
       unitSalePrice: currentMyCustomProduct?.unitSalePrice || '',
       measureUnit: currentMyCustomProduct?.measureUnit || '',
+      categoryId: currentMyCustomProduct?.category?.id || '',
       image: currentMyCustomProduct?.image || ''
     },
     validationSchema: NewMyCustomProductSchema,
@@ -187,6 +190,24 @@ export default function MyCustomProductNewForm({ isEdit, currentMyCustomProduct 
                     error={Boolean(touched.measureUnit && errors.measureUnit)}
                     helperText={touched.measureUnit && errors.measureUnit}
                   />
+
+                  <TextField
+                    select
+                    fullWidth
+                    label="Category ID"
+                    placeholder="Category ID"
+                    {...getFieldProps('categoryId')}
+                    SelectProps={{ native: true }}
+                    error={Boolean(touched.categoryId && errors.categoryId)}
+                    helperText={touched.categoryId && errors.categoryId}
+                  >
+                    <option value="" />
+                    {listCategory.map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.name}
+                      </option>
+                    ))}
+                  </TextField>
                 </Stack>
 
                 <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>

@@ -8,6 +8,7 @@ const initialState = {
   totalUser: 0,
   totalBill: 0,
   listRevenueByMonth: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  listProfitByMonth: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   isLoading: false,
   isSuccess: null,
   errorMessage: ''
@@ -48,6 +49,13 @@ const slice = createSlice({
       state.isLoading = false;
       state.isSuccess = true;
       state.listRevenueByMonth = action.payload;
+    },
+
+    // GET LIST PROFIT BY MONTH
+    getListProfitByMonthSuccess(state, action) {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.listProfitByMonth = action.payload;
     }
   }
 });
@@ -96,8 +104,24 @@ export function getListRevenueByMonth(myCallBack) {
   return async (dispatch, getState) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get(`/analytics/revenue`);
+      const response = await axios.get(`/analytics/revenue/year/2022`);
       dispatch(slice.actions.getListRevenueByMonthSuccess(response.data.data));
+    } catch (e) {
+      console.log(e);
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
+      dispatch(slice.actions.hasError(messageError));
+    } finally {
+      if (myCallBack) myCallBack(getState());
+    }
+  };
+}
+
+export function getListProfitByMonth(myCallBack) {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await axios.get(`/analytics/profit/year/2022`);
+      dispatch(slice.actions.getListProfitByMonthSuccess(response.data.data));
     } catch (e) {
       console.log(e);
       const messageError = e.message ? e.message : defaultErrorString + e.toString();

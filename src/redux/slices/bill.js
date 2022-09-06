@@ -7,6 +7,7 @@ import axios from '../../utils/myCustomAxios';
 
 const initialState = {
   listData: [],
+  listReportData: [],
   isLoading: false,
   isSuccess: null,
   errorMessage: ''
@@ -40,6 +41,12 @@ const slice = createSlice({
       state.isLoading = false;
       state.isSuccess = true;
       state.listData = action.payload;
+    },
+
+    getBillListForReportSuccess(state, action) {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.listReportData = action.payload;
     },
 
     // ADD BILL
@@ -84,6 +91,22 @@ export function getBillListByUserId(userId, myCallBack) {
     try {
       const response = await axios.get(`/bills/userId/${userId}`);
       dispatch(slice.actions.getBillListByUserIdSuccess(response.data.data));
+    } catch (e) {
+      console.log(e);
+      const messageError = e.message ? e.message : defaultErrorString + e.toString();
+      dispatch(slice.actions.hasError(messageError));
+    } finally {
+      if (myCallBack) myCallBack(getState());
+    }
+  };
+}
+
+export function getBillListForReport(myCallBack) {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await axios.get(`/bills/report`);
+      dispatch(slice.actions.getBillListForReportSuccess(response.data.data));
     } catch (e) {
       console.log(e);
       const messageError = e.message ? e.message : defaultErrorString + e.toString();
